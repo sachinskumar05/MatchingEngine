@@ -71,7 +71,7 @@ public class EQOrder implements Order {
             log.debug( "executing execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
                                 execId, fillPx, fillQty, clOrdId, leavesQty);
             if (leavesQty == 0) {
-                log.info(()->"Order is fully filled");
+                log.info("Order is fully filled clOrdId={}, orderId={}", clOrdId, orderId);
                 this.isOpen.set(false);
                 return null;
             } else if (leavesQty < 0) {
@@ -88,9 +88,11 @@ public class EQOrder implements Order {
             this.cumQty += fillQty;
             //Post all computation updating the order values with successful execution
             this.avgPx = avgPxComputed;
-            log.debug("Before leaves qty {}, clOrdId {} ", this::getLeavesQty, this::getClientOrderId );
+            log.debug("Before leaves qty {}, clOrdId {}, orderId {}",
+                    this::getLeavesQty, this::getClientOrderId, this::getOrderId );
             this.leavesQty = leavesQtyComputed;
-            log.debug("After leaves qty {}, clOrdId {} ", this::getLeavesQty, this::getClientOrderId );
+            log.debug("After leaves qty {}, clOrdId {}, orderId {}",
+                    this::getLeavesQty, this::getClientOrderId, this::getOrderId );
             trade = new Trade(getOrderId(), getSymbol(), fillPx, fillQty, getSide(), execId, ctrbClOrdId);
             addTrade( trade );
             if( this.leavesQty <= 0 )

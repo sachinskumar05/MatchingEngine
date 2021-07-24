@@ -97,33 +97,36 @@ public class CrossingProcessor {
 
                             //# Generate the passive executions
                             bestOppositeOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, eqOrder.getClientOrderId());
+
                             long transactionTime = MEDateUtils.getCurrentMillis();
                             eqOrder.setExecutionTS(transactionTime);
                             bestOppositeOrder.setExecutionTS(transactionTime);
+
+                            if (bestOppositeOrder.getLeavesQty() == 0) {
+                                listIterator.remove();
+                                log.debug( "Removed from matching book as bestOppositeOrder {}, bestOppositeOrderId {}",
+                                        bestOppositeOrder.getClientOrderId(), bestOppositeOrder.getOrderId() );
+                            } else if (bestOppositeOrder.getLeavesQty() < 0) {
+                                log.error(()->"Order over executed [Check fill logic if happened ] eqOrder = " + bestOppositeOrder);
+                                listIterator.remove();
+                            }
+
+                            if (eqOrder.getLeavesQty() == 0) {
+                                boolean isRemoved = equityOrderBook.removeOrder(eqOrder);
+                                log.debug( "Removed from matching book? {}, clOrdId={}, orderId={}",
+                                        isRemoved,eqOrder.getClientOrderId(), eqOrder.getOrderId() );
+                            } else if (eqOrder.getLeavesQty() < 0) {
+                                log.warn("Order over executed [Check fill logic if happened ] eqOrder {}" , eqOrder);
+                                boolean isRemoved = equityOrderBook.removeOrder(eqOrder);
+                                log.debug(()-> "Overfilled but is Removed bestOppositeOrder " + isRemoved );
+                            }
+
                         } finally {
                             log.debug(()->"Releasing Transaction Lock for matching");
                             equityOrderBook.writeLock.unlock();
                         }
                     }
-                    if (bestOppositeOrder.getLeavesQty() == 0) {
-                        listIterator.remove();
-                        log.debug(()-> bestOppositeOrder.getClientOrderId() + " is removed from matching book as bestOppositeOrder ");
-                    } else  if (bestOppositeOrder.getLeavesQty() < 0) {
-                        log.warn(()->"Order over executed [Check fill logic if happened ] eqOrder = " + bestOppositeOrder);
-                        listIterator.remove();
-                    }
-/**
- if (eqOrder.getLeavesQty() == 0) {
- boolean isRemoved = EquityOrderBook.removeOrder(eqOrder);
- log.debug(()-> eqOrder.getClientOrderId() + " is Removed from matching book? " + isRemoved );
- return isRemoved;
- } else if (eqOrder.getLeavesQty() < 0) {
- log.warn(()->"Order over executed [Check fill logic if happened ] eqOrder = " + eqOrder);
- boolean isRemoved = EquityOrderBook.removeOrder(eqOrder);
- log.debug(()-> "Overfilled but is Removed bestOppositeOrder " + isRemoved );
- return isRemoved;
- }
- **/
+
                 }
                 if (eqOrder.getLeavesQty() > 0 && bestOppositeOrderList.isEmpty()) {
                     log.debug(()->"Check for the next best price opposite side of order " + eqOrder);
@@ -139,4 +142,7 @@ public class CrossingProcessor {
 
         return false;
     }
+
+
+
 }

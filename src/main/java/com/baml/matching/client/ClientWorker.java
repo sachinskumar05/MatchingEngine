@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,6 +24,8 @@ import static com.baml.matching.util.AppConstants.*;
 public class ClientWorker implements Client {
 
     private static final EquityMatchingEngine EQUITY_MATCHING_ENGINE = EquityMatchingEngine.getInstance();
+
+    private static final AtomicLong incrimentalUnique = new AtomicLong();
 
     private final List<EQOrder> eqOrderList = new ArrayList<>();
     private final StringBuilder clOrdIdBuilder = new StringBuilder();
@@ -36,7 +39,7 @@ public class ClientWorker implements Client {
     private void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
         for (int i = 0; i < orderSliceCount; i++) {
             clOrdIdBuilder.setLength(0);
-            clOrdIdBuilder.append(side).append(MEDateUtils.getCurrentMillis());
+            clOrdIdBuilder.append(side).append(MEDateUtils.getCurrentMillis()).append(incrimentalUnique.getAndDecrement());
 
             EQOrder.Builder ordBuilder = null;
             try {

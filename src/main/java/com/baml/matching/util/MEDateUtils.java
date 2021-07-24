@@ -22,7 +22,7 @@ public class MEDateUtils {
 
     public static void pause(long millis) {
         try {
-            TimeUnit.MICROSECONDS.sleep(millis);
+            TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {
             log.error("Interrupted while sleep ", e);
             Thread.currentThread().interrupt();

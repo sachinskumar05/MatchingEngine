@@ -48,19 +48,23 @@ public class BamlCodeChallengeApplication {
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.20, 200, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 200, OrderType.LIMIT));
+		EquitySymbol symbolBAC = null;
 
 		try {
-			final EquitySymbol symbolBAC = EquitySymbolCache.get(symbol);
-
-			for (int i = 0; i < 20; i++) {
-				MEDateUtils.pause(5000);
-				log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
-				log.info( "Order History {} " , equityMatchingEngine.getOrderBook(symbolBAC).getOrderHistory());
-			}
-
+			symbolBAC = EquitySymbolCache.get(symbol);
 		} catch (SymbolNotSupportedException e) {
 			log.error("Failed to create order for {}", symbol, e );
 		}
+
+		MEDateUtils.pause(1000);
+		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
+
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.25, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 50, OrderType.LIMIT));
+
+		MEDateUtils.pause(1000);
+		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
 
 		Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 
