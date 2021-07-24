@@ -22,10 +22,44 @@
 
 
 <p>
+Assignment: Stock Exchange
+
+A Stock Exchange's Matching Engine is fundamental to all trading activities. Not only does it maintains and manages all of the investor’s orders, it also generates trades from them. The Matching Engine has to process a large amount of data at any given interval. On top of this, it has to accomplish multiple functions on the back of each order processed (e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
+
 Design a Stock Exchange's Matching Engine’s crossing functionality, storing orders and generate any resulting trades from new orders. Below are some of the requirements:
 1.	Implement in Java
 2.	Be able to handle multiple client connections into the Engine
 3.	Solution needs to be thread safe
+
+You are free to list any assumptions made during this exercise. For example, you may assume that the orders received by the Exchange is of a certain fixed format which you have defined. Bear in mind that the goal of this exercise is to demonstrate your ability to design and implement a workable solution. Avoid 3rd party libraries where possible.
+
+Example:
+Say the order book, sorted by price and time looks like this:
+
+ID	Side	Time	Qty	Price	Qty	Time	Side
+3	 	 	 	20.30	200	09:05	Sell
+1	 	 	 	20.30	100	09:01	Sell
+2	 	 	 	20.25	100	09:03	Sell
+5	Buy	09:08	200	20.20	 	 	 
+4	Buy	09:06	100	20.15	 	 	 
+6	Buy	09:09	200	20.15	 	 	 
+NB: The order for sorting by time is ascending for buy-side orders and descending for sell-side orders, so that the order with the highest priority is always in the center and priorities decrease outwards (up or down, depending on the side).
+
+Now imagine a new limit order to "buy 250 shares at 20.35" comes in, then it will be filled, in this order:
+
+100 shares at 20.25 (order #2)
+100 shares at 20.30 (order #1)
+50 shares at 20.30 (order #3)
+
+This leaves the order book in the following state:
+
+ID	Side	Time	Qty	Price	Qty	Time	Side
+3	 	 	 	20.30	150	09:05	Sell
+5	Buy	09:08	200	20.20	 	 	 
+4	Buy	09:06	100	20.15	 	 	 
+6	Buy	09:09	200	20.15
+
+Please do not share the question with anyone.
 
 
 </p>
