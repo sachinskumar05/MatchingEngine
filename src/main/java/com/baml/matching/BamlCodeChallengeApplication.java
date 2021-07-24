@@ -1,7 +1,6 @@
 package com.baml.matching;
 
 import com.baml.matching.client.ClientWorker;
-import com.baml.matching.config.AppCfg;
 import com.baml.matching.engine.EquityMatchingEngine;
 import com.baml.matching.exception.SymbolNotSupportedException;
 import com.baml.matching.symbols.EquitySymbol;
@@ -11,20 +10,15 @@ import com.baml.matching.types.Side;
 import com.baml.matching.util.MEDateUtils;
 import lombok.extern.log4j.Log4j2;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @SpringBootApplication
 public class BamlCodeChallengeApplication {
-
-	@Autowired
-	private AppCfg appCfg;
 
 
 	public static void main(String[] args) {
@@ -67,7 +61,7 @@ public class BamlCodeChallengeApplication {
 
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.25, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 100, OrderType.LIMIT));
-//		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 50, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
 		MEDateUtils.pause(1000);
 		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));

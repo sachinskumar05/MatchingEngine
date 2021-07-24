@@ -37,8 +37,8 @@ public class ClientWorker implements Client {
     private void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
         for (int i = 0; i < orderSliceCount; i++) {
 
-            String clOrdId = String.format("%s%s-C%s",
-                    side, MEDateUtils.getCurrentMillis(), incrementallyUnique.getAndIncrement());
+            String clOrdId = String.format("%s%sC%s",
+                    side, MEDateUtils.getCurrentNanos(), incrementallyUnique.getAndIncrement());
 
             EQOrder.Builder ordBuilder = null;
             try {

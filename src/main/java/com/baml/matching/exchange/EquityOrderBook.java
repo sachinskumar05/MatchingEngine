@@ -1,5 +1,6 @@
 package com.baml.matching.exchange;
 
+import com.baml.matching.exchange.crossing.CrossingProcessor;
 import com.baml.matching.exchange.order.EQOrder;
 import com.baml.matching.symbols.EquitySymbol;
 import com.baml.matching.types.Side;
@@ -10,6 +11,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -33,6 +36,9 @@ public class EquityOrderBook implements OrderBook, Serializable {
 
     private static final AtomicLong currentTradeId = new AtomicLong();
 
+    private static final ExecutorService executorForCrossing = Executors.newSingleThreadExecutor();
+    private CrossingProcessor crossingProcessor = new CrossingProcessor();
+
     private final transient ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final transient Lock writeLock = readWriteLock.writeLock();
 
@@ -49,7 +55,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
 
 
     public long generateTradeId() {
-        return  (MEDateUtils.getCurrentMillis() + currentTradeId.getAndIncrement()) % Long.MIN_VALUE;
+        return  (MEDateUtils.getCurrentNanos() + currentTradeId.getAndIncrement()) % Long.MIN_VALUE;
     }
 
     @Override
@@ -112,7 +118,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
             log.error("Duplicate Ask order received {}" , ()-> eqOrder);
             return false;
         }
-        eqOrder.setReceivedTS(MEDateUtils.getCurrentMillis());
+        eqOrder.setReceivedTS(MEDateUtils.getCurrentNanos());
         return eqOrderList.add(eqOrder);
     }
 
@@ -126,8 +132,21 @@ public class EquityOrderBook implements OrderBook, Serializable {
     }
 
     public List<EQOrder> getBestBid() {
+//        if( fxBidOrderSortedMap.isEmpty() ) return new ArrayList<>();
+//        return fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
         if( fxBidOrderSortedMap.isEmpty() ) return new ArrayList<>();
-        return fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
+        List<EQOrder> bestBid = fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
+        if(bestBid != null && !bestBid.isEmpty())
+            return bestBid;
+
+        while( !fxBidOrderSortedMap.isEmpty() ) {
+            fxBidOrderSortedMap.remove(fxBidOrderSortedMap.lastKey());
+            bestBid = fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
+            if(bestBid != null && !bestBid.isEmpty())
+                return bestBid;
+        }
+
+        return new ArrayList<>();
     }
 
     public double getBestBidPrice() {
@@ -144,13 +163,28 @@ public class EquityOrderBook implements OrderBook, Serializable {
             fxol.removeIf(fxo -> fxo.equals(eqOrder));
             return fxol;
         });
-        log.debug("List of Bids on price {}, {} " , eqOrder::getOrdPx, ()->fxBidOrderSortedMap.get(eqOrder.getOrdPx()));
+        Double ordPxKey = eqOrder.getOrdPx();
+        List<EQOrder> eqOrderList = fxBidOrderSortedMap.get(ordPxKey);
+        if(eqOrderList.isEmpty())
+            fxBidOrderSortedMap.remove(ordPxKey);
+        log.debug("After Removal, List of Bids on price {}, {} " , ordPxKey, eqOrderList);
         return null!=fxoList && !fxoList.contains(eqOrder);
     }
 
     public List<EQOrder> getBestAsk() {
         if( fxAskOrderSortedMap.isEmpty() ) return new ArrayList<>();
-        return fxAskOrderSortedMap.get(fxAskOrderSortedMap.firstKey());
+        List<EQOrder> bestAsk = fxAskOrderSortedMap.get(fxAskOrderSortedMap.firstKey());
+        if(bestAsk != null && !bestAsk.isEmpty())
+            return bestAsk;
+
+        while( !fxAskOrderSortedMap.isEmpty() ) {
+            fxAskOrderSortedMap.remove(fxAskOrderSortedMap.firstKey());
+            bestAsk = fxAskOrderSortedMap.get(fxAskOrderSortedMap.firstKey());
+            if(bestAsk != null && !bestAsk.isEmpty())
+                return bestAsk;
+        }
+
+        return new ArrayList<>();
     }
 
     public double getBestAskPrice() {
@@ -167,8 +201,17 @@ public class EquityOrderBook implements OrderBook, Serializable {
             fxol.removeIf(fxo -> fxo.equals(eqOrder));
                 return fxol;
             });
-        log.debug("List of Asks on price {}, {} " , eqOrder::getOrdPx, ()->fxAskOrderSortedMap.get(eqOrder.getOrdPx()));
+        Double ordPxKey = eqOrder.getOrdPx();
+        List<EQOrder> eqOrderList = fxAskOrderSortedMap.get(ordPxKey);
+        if(eqOrderList.isEmpty()) {
+            fxAskOrderSortedMap.remove(ordPxKey);
+        }
+        log.debug("After Removal, List of Asks on price {}, {} " , ordPxKey, eqOrderList);
         return null!=fxoList && !fxoList.contains(eqOrder);
+    }
+
+    public void processOrder(EQOrder eqOrder) {
+        executorForCrossing.execute(()->crossingProcessor.processOrder(eqOrder));
     }
 
     @Override
@@ -213,7 +256,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
         sb.append("\nequitySymbol=").append(equitySymbol)
         .append("-hashCode=").append(equitySymbol.hashCode())
         .append("\n")
-        .append("ID\tSide\tTime\t\tQty\t\tPrice\tQty\t\tTime\t\t\tSide")
+        .append("ID\tSide\tTime\t\t\tQty\t\tPrice\tQty\t\tTime\t\t\t\tSide")
         .append(formatAsk())
         .append(formatBid())
         .append("\n")
@@ -231,7 +274,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
         Collections.reverse(res);
         for(EQOrder eqOrder: res) {
             sb.append(eqOrder.getOrderId()).append("\t")
-                    .append("    \t    \t   \t\t\t")
+                    .append("    \t    \t   \t\t\t\t")
                     .append(eqOrder.getOrdPx()).append("\t")
                     .append(eqOrder.getOrdQty()).append("\t")
                     .append(eqOrder.getReceivedTS()).append("\t")

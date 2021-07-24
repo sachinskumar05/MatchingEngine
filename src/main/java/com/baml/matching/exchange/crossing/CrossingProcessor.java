@@ -17,12 +17,6 @@ import static com.baml.matching.types.Side.SELL;
 @Log4j2
 public class CrossingProcessor {
 
-    private CrossingProcessor(){}
-    private static final CrossingProcessor INSTANCE = new CrossingProcessor();
-    public static CrossingProcessor getInstance(){
-        return INSTANCE;
-    }
-
     public void processOrder(EQOrder eqOrder) {
         try {
             EquityOrderBook equityOrderBook = EquityOrderBook.getBook(eqOrder.getSymbol());
@@ -47,7 +41,7 @@ public class CrossingProcessor {
                 List<EQOrder> finalList = bestOppositeOrderList;
                 log.debug( "--- clOrdId {}, Opposite Orders {}" , eqOrder::getClientOrderId, ()-> finalList);
 
-                bestOppositeOrderList = getEqOrders(eqOrder, equityOrderBook, side, clOrdId, bestOppositeOrderList);
+                bestOppositeOrderList = executeOrders(eqOrder, equityOrderBook, side, clOrdId, bestOppositeOrderList);
                 if (bestOppositeOrderList == null) break;
 
             }
@@ -58,7 +52,7 @@ public class CrossingProcessor {
 
     }
 
-    private List<EQOrder> getEqOrders(EQOrder eqOrder, EquityOrderBook equityOrderBook, Side side, String clOrdId, List<EQOrder> bestOppositeOrderList) {
+    private List<EQOrder> executeOrders(EQOrder eqOrder, EquityOrderBook equityOrderBook, Side side, String clOrdId, List<EQOrder> bestOppositeOrderList) {
         ListIterator<EQOrder> listIterator = bestOppositeOrderList.listIterator();
         while (listIterator.hasNext()) { //Iterate based on receiving sequence
             EQOrder bestOppositeOrder = listIterator.next();
@@ -132,7 +126,7 @@ public class CrossingProcessor {
                 //# Generate the passive executions
                 bestOppositeOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, eqOrder.getClientOrderId());
 
-                long transactionTime = MEDateUtils.getCurrentMillis();
+                long transactionTime = MEDateUtils.getCurrentNanos();
                 eqOrder.setExecutionTS(transactionTime);
                 bestOppositeOrder.setExecutionTS(transactionTime);
 

@@ -29,9 +29,7 @@ public class EquityMatchingEngine implements MatchingEngine {
 
     private static final AtomicLong atomicOrderId = new AtomicLong();
 
-    ExecutorService executorForMatching = Executors.newFixedThreadPool(5);
-
-    private static final CrossingProcessor crossingProcessor = CrossingProcessor.getInstance();
+    private static final ExecutorService executorForMatching = Executors.newSingleThreadExecutor();
 
     private EquityMatchingEngine() {
          for(EquitySymbol equitySymbol : EquitySymbolCache.getAllSymbols() ) {
@@ -95,7 +93,7 @@ public class EquityMatchingEngine implements MatchingEngine {
         log.info("Received to add clOrdId {}, side {}, price {}, qty {}, order id {} ",
                 eqOrder::getClientOrderId, eqOrder::getSide, eqOrder::getOrdPx, eqOrder::getOrdQty, eqOrder::getOrderId);
 
-        executorForMatching.submit( ()-> crossingProcessor.processOrder(eqOrder));//Submitted for possible execution
+        executorForMatching.submit( ()-> orderBook.processOrder(eqOrder));//Submitted for possible execution
 
     }
 
