@@ -8,6 +8,7 @@ import com.baml.matching.util.MEDateUtils;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -25,6 +26,9 @@ import static com.baml.matching.types.Side.SELL;
 public class EquityOrderBook implements OrderBook, Serializable {
 
     private static final Map<EquitySymbol, EquityOrderBook> orderBookCache = new ConcurrentHashMap<>();
+
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###########.00##########");
+    private static final DecimalFormat DECIMAL_TO_INT_FORMAT = new DecimalFormat("###########");
 
     public static EquityOrderBook getBook(EquitySymbol equitySymbol) {//Flyweight and thread safe
         return orderBookCache.computeIfAbsent(equitySymbol, eqs -> new EquityOrderBook(eqs) );
@@ -275,9 +279,9 @@ public class EquityOrderBook implements OrderBook, Serializable {
         for(EQOrder eqOrder: res) {
             sb.append(eqOrder.getOrderId()).append("\t")
                     .append("    \t    \t   \t\t\t\t")
-                    .append(eqOrder.getOrdPx()).append("\t")
-                    .append(eqOrder.getLeavesQty()).append("\t")
-                    .append(eqOrder.getReceivedTS()).append("\t")
+                    .append(DECIMAL_FORMAT.format(eqOrder.getOrdPx())).append("\t")
+                    .append(DECIMAL_TO_INT_FORMAT.format(eqOrder.getLeavesQty())).append("\t")
+                    .append(eqOrder.getReceivedTS()).append("\t\t")
                     .append(eqOrder.getSide());
             sb.append("\n");
         }
@@ -285,7 +289,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
     }
 
     public String formatBid() {
-        StringBuilder sb = new StringBuilder("\n");
+        StringBuilder sb = new StringBuilder();
         List<EQOrder> res = new ArrayList<>();
         for ( Map.Entry<Double, List<EQOrder>> entry : fxBidOrderSortedMap.entrySet() ) {
             List<EQOrder> eqOrderList = new ArrayList<>(entry.getValue());
@@ -297,8 +301,8 @@ public class EquityOrderBook implements OrderBook, Serializable {
             sb.append(eqOrder.getOrderId()).append("\t")
                     .append(eqOrder.getSide()).append("\t")
                     .append(eqOrder.getReceivedTS()).append("\t")
-                    .append(eqOrder.getLeavesQty()).append("\t")
-                    .append(eqOrder.getOrdPx()).append("\t")
+                    .append(DECIMAL_TO_INT_FORMAT.format(eqOrder.getLeavesQty())).append("\t\t")
+                    .append(DECIMAL_FORMAT.format(eqOrder.getOrdPx())).append("\t")
                     .append("  \t    \t    \t   \t");
             sb.append("\n");
         }
