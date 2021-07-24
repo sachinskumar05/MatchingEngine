@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: "@project.name@"
+
+
+app-cfg:
+  order-prefix-buy: ${BUY_ORD_PRIFX:B}
+  order-prefix-sell: ${SELL_ORD_PRIFX:S}
+
+  data-dir: ${APP_DATA_DIR:./data}
+  symbol-file: ${APP_SYMBOL_FILE_NAME:Symbols.csv}
+  symbol-file-content-separator: ${APP_SYMBOL_FILE_CONTENT_SEPARATOR:,}
+
+  aeron-driver-dir: ${MEDIA_DRIVER_DIR:./driver/aeron}
+

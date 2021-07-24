@@ -7,10 +7,7 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
@@ -21,10 +18,10 @@
     <img src="images/Sachin_Fox_Cafe_Logo_BrandCrowd_Logo.png" alt="Sachin (The Architect)" width="80" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Solution</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    This is a code implementation for the task within given time frame!
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
@@ -35,9 +32,6 @@
     ·
     <a href="https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues">Request Feature</a>
   </p>
-</p>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
@@ -104,9 +98,9 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Clone the repo
+1. unzip the repo
    ```
-   git clone https://github.com/your_username_/Project-Name.git
+   unzip <Application.zip>
    ```
 
 
@@ -160,5 +154,10 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/sa
 
 
 
+[contributors-shield]: images/Contributers.jpg
+[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[linkedin-shield]: images/LinkedIn.jpg
 [linkedin-url]: https://www.linkedin.com/in/kumarsac/
+[issues-shield]: images/Issues.jpg
+[issues-url]: https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues
 [product-screenshot]: images/screenshot.png
