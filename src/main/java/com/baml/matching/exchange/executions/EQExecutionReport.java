@@ -3,7 +3,7 @@ package com.baml.matching.exchange.executions;
 import com.baml.matching.types.ExecType;
 import com.baml.matching.types.OrderType;
 
-public class FXExecutionReport implements ExectionReport {
+public class EQExecutionReport implements ExectionReport {
     private final String execId ;
     private final String orderId ;
     private final ExecType execType;
@@ -23,7 +23,7 @@ public class FXExecutionReport implements ExectionReport {
 
     }
 
-    public FXExecutionReport(String execId, String orderId, ExecType execType, OrderType ordTyp, double execQty, double execPrice){
+    public EQExecutionReport(String execId, String orderId, ExecType execType, OrderType ordTyp, double execQty, double execPrice){
 
           this.execId = execId;
           this.orderId = orderId;
