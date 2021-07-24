@@ -20,6 +20,16 @@
 
   <h3 align="center">Solution</h3>
 
+
+<p>
+Design a Stock Exchange's Matching Engine’s crossing functionality, storing orders and generate any resulting trades from new orders. Below are some of the requirements:
+1.	Implement in Java
+2.	Be able to handle multiple client connections into the Engine
+3.	Solution needs to be thread safe
+
+
+</p>
+
   <p align="center">
     This is a code implementation for the task within given time frame!
     <br />
