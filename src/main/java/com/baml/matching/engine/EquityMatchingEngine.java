@@ -27,7 +27,7 @@ import static com.baml.matching.types.Side.SELL;
 public class EquityMatchingEngine implements MatchingEngine {
 
 
-    private static final AtomicLong currentOrderId = new AtomicLong();
+    private static final AtomicLong atomicOrderId = new AtomicLong();
 
     ExecutorService executorForMatching = Executors.newFixedThreadPool(5);
 
@@ -91,7 +91,7 @@ public class EquityMatchingEngine implements MatchingEngine {
         if(null == orderBook ) {
             throw new OrderCreationException("Unknown security/security received symbol in order " + eqOrder.getSymbol());
         }
-        eqOrder.setOrderId(currentOrderId.incrementAndGet());
+        eqOrder.setOrderId(atomicOrderId.incrementAndGet());
         log.info("Received to add clOrdId {}, side {}, price {}, qty {}, order id {} ",
                 eqOrder::getClientOrderId, eqOrder::getSide, eqOrder::getOrdPx, eqOrder::getOrdQty, eqOrder::getOrderId);
 

@@ -12,12 +12,11 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static com.baml.matching.types.Side.SELL;
 import static com.baml.matching.util.AppConstants.*;
 
 @Log4j2
@@ -25,10 +24,9 @@ public class ClientWorker implements Client {
 
     private static final EquityMatchingEngine EQUITY_MATCHING_ENGINE = EquityMatchingEngine.getInstance();
 
-    private static final AtomicLong incrimentalUnique = new AtomicLong();
+    private static final AtomicInteger incrementallyUnique = new AtomicInteger(0);
 
     private final List<EQOrder> eqOrderList = new ArrayList<>();
-    private final StringBuilder clOrdIdBuilder = new StringBuilder();
 
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final Lock writeLock = readWriteLock.writeLock();
@@ -38,12 +36,13 @@ public class ClientWorker implements Client {
     }
     private void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
         for (int i = 0; i < orderSliceCount; i++) {
-            clOrdIdBuilder.setLength(0);
-            clOrdIdBuilder.append(side).append(MEDateUtils.getCurrentMillis()).append(incrimentalUnique.getAndDecrement());
+
+            String clOrdId = String.format("%s%s-C%s",
+                    side, MEDateUtils.getCurrentMillis(), incrementallyUnique.getAndIncrement());
 
             EQOrder.Builder ordBuilder = null;
             try {
-                ordBuilder = new EQOrder.Builder(clOrdIdBuilder.toString(), symbol, side, ot);
+                ordBuilder = new EQOrder.Builder(clOrdId, symbol, side, ot);
                 EQOrder eqOrder = ordBuilder.with(builder -> {
                     builder.price = px ;
                     builder.qty = qty;

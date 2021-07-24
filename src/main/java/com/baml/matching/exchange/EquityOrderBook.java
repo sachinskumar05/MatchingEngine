@@ -223,35 +223,43 @@ public class EquityOrderBook implements OrderBook, Serializable {
 
     public String formatAsk() {
         StringBuilder sb = new StringBuilder("\n");
+        List<EQOrder> res = new ArrayList<>();
         for ( Map.Entry<Double, List<EQOrder>> entry : fxAskOrderSortedMap.entrySet() ) {
             List<EQOrder> eqOrderList = entry.getValue();
-            for(EQOrder eqOrder: eqOrderList) {
-                sb.append(eqOrder.getOrderId()).append("\t")
-                .append("    \t    \t   \t\t\t")
-                        .append(eqOrder.getOrdPx()).append("\t")
-                        .append(eqOrder.getOrdQty()).append("\t")
-                        .append(eqOrder.getReceivedTS()).append("\t")
-                        .append(eqOrder.getSide());
-                sb.append("\n");
-            }
+            res.addAll(eqOrderList);
+        }
+        Collections.reverse(res);
+        for(EQOrder eqOrder: res) {
+            sb.append(eqOrder.getOrderId()).append("\t")
+                    .append("    \t    \t   \t\t\t")
+                    .append(eqOrder.getOrdPx()).append("\t")
+                    .append(eqOrder.getOrdQty()).append("\t")
+                    .append(eqOrder.getReceivedTS()).append("\t")
+                    .append(eqOrder.getSide());
+            sb.append("\n");
         }
         return sb.toString();
     }
 
     public String formatBid() {
         StringBuilder sb = new StringBuilder("\n");
+        List<EQOrder> res = new ArrayList<>();
         for ( Map.Entry<Double, List<EQOrder>> entry : fxBidOrderSortedMap.entrySet() ) {
-            List<EQOrder> eqOrderList = entry.getValue();
-            for(EQOrder eqOrder: eqOrderList) {
-                sb.append(eqOrder.getOrderId()).append("\t")
-                .append(eqOrder.getSide()).append("\t")
-                .append(eqOrder.getReceivedTS()).append("\t")
-                .append(eqOrder.getOrdQty()).append("\t")
-                .append(eqOrder.getOrdPx()).append("\t")
-                .append("  \t    \t    \t   \t");
-                sb.append("\n");
-            }
+            List<EQOrder> eqOrderList = new ArrayList<>(entry.getValue());
+            Collections.reverse(eqOrderList);
+            res.addAll(eqOrderList);
         }
+        Collections.reverse(res);
+        for(EQOrder eqOrder: res) {
+            sb.append(eqOrder.getOrderId()).append("\t")
+                    .append(eqOrder.getSide()).append("\t")
+                    .append(eqOrder.getReceivedTS()).append("\t")
+                    .append(eqOrder.getOrdQty()).append("\t")
+                    .append(eqOrder.getOrdPx()).append("\t")
+                    .append("  \t    \t    \t   \t");
+            sb.append("\n");
+        }
+
         return sb.toString();
     }
 
