@@ -118,7 +118,7 @@ public class CrossingProcessor {
                     bestOppositeOrder::getClientOrderId);
 
             try {
-                equityOrderBook.writeLock.lock();
+//                equityOrderBook.writeLock.lock();
                 log.debug(() -> "Acquiring Transaction Lock for matching on OrderBook of symbol = " + equityOrderBook.getSymbol());
                 //Generate aggressive trade
                 eqOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, bestOppositeOrder.getClientOrderId());
@@ -151,7 +151,7 @@ public class CrossingProcessor {
 
             } finally {
                 log.debug(() -> "Releasing Transaction Lock for matching");
-                equityOrderBook.writeLock.unlock();
+//                equityOrderBook.writeLock.unlock();
             }
         }
         return false;

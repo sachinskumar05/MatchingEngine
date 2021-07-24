@@ -276,7 +276,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
             sb.append(eqOrder.getOrderId()).append("\t")
                     .append("    \t    \t   \t\t\t\t")
                     .append(eqOrder.getOrdPx()).append("\t")
-                    .append(eqOrder.getOrdQty()).append("\t")
+                    .append(eqOrder.getLeavesQty()).append("\t")
                     .append(eqOrder.getReceivedTS()).append("\t")
                     .append(eqOrder.getSide());
             sb.append("\n");
@@ -297,7 +297,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
             sb.append(eqOrder.getOrderId()).append("\t")
                     .append(eqOrder.getSide()).append("\t")
                     .append(eqOrder.getReceivedTS()).append("\t")
-                    .append(eqOrder.getOrdQty()).append("\t")
+                    .append(eqOrder.getLeavesQty()).append("\t")
                     .append(eqOrder.getOrdPx()).append("\t")
                     .append("  \t    \t    \t   \t");
             sb.append("\n");
