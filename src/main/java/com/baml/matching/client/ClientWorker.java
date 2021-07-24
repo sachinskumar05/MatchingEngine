@@ -30,8 +30,10 @@ public class ClientWorker implements Client {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final Lock writeLock = readWriteLock.writeLock();
 
-
-    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
+    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot) {
+        this.createAndSubmitOrder(symbol,side,px, qty, ot, 1);
+    }
+    private void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
         for (int i = 0; i < orderSliceCount; i++) {
             clOrdIdBuilder.setLength(0);
             clOrdIdBuilder.append(side).append(MEDateUtils.getCurrentMillis());

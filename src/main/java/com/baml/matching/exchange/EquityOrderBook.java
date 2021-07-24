@@ -6,6 +6,7 @@ import com.baml.matching.types.Side;
 import com.baml.matching.util.MEDateUtils;
 import lombok.extern.log4j.Log4j2;
 
+import javax.swing.text.html.parser.Entity;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -112,7 +113,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
             log.error("Duplicate Ask order received {}" , ()-> eqOrder);
             return false;
         }
-
+        eqOrder.setReceivedTS(MEDateUtils.getCurrentMillis());
         return eqOrderList.add(eqOrder);
     }
 
@@ -210,13 +211,49 @@ public class EquityOrderBook implements OrderBook, Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("\n=================== ORDER BOOK ===================\nEquityOrderBook{");
-        sb.append("\nequitySymbol=").append(equitySymbol);
-        sb.append("-hashCode=").append(equitySymbol.hashCode()).append('-');
-        sb.append(",\n\n fxBidOrderSortedMap=").append(fxBidOrderSortedMap);
-        sb.append(",\n\n fxAskOrderSortedMap=").append(fxAskOrderSortedMap);
-        sb.append("}\n=================== END of ORDER BOOK ===================");
+        sb.append("\nequitySymbol=").append(equitySymbol)
+        .append("-hashCode=").append(equitySymbol.hashCode())
+        .append("\n")
+        .append("ID\tSide\tTime\t\tQty\t\tPrice\tQty\t\tTime\t\t\tSide")
+        .append(formatAsk())
+        .append(formatBid())
+        .append("\n")
+        .append("}\n=================== END of ORDER BOOK ===================");
         return sb.toString();
     }
 
+    public String formatAsk() {
+        StringBuilder sb = new StringBuilder("\n");
+        for ( Map.Entry<Double, List<EQOrder>> entry : fxAskOrderSortedMap.entrySet() ) {
+            List<EQOrder> eqOrderList = entry.getValue();
+            for(EQOrder eqOrder: eqOrderList) {
+                sb.append(eqOrder.getOrderId()).append("\t")
+                .append("    \t    \t   \t\t\t")
+                        .append(eqOrder.getOrdPx()).append("\t")
+                        .append(eqOrder.getOrdQty()).append("\t")
+                        .append(eqOrder.getReceivedTS()).append("\t")
+                        .append(eqOrder.getSide());
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String formatBid() {
+        StringBuilder sb = new StringBuilder("\n");
+        for ( Map.Entry<Double, List<EQOrder>> entry : fxBidOrderSortedMap.entrySet() ) {
+            List<EQOrder> eqOrderList = entry.getValue();
+            for(EQOrder eqOrder: eqOrderList) {
+                sb.append(eqOrder.getOrderId()).append("\t")
+                .append(eqOrder.getSide()).append("\t")
+                .append(eqOrder.getReceivedTS()).append("\t")
+                .append(eqOrder.getOrdQty()).append("\t")
+                .append(eqOrder.getOrdPx()).append("\t")
+                .append("  \t    \t    \t   \t");
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
 
 }

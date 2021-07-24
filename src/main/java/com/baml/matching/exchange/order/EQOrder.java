@@ -6,6 +6,8 @@ import com.baml.matching.symbols.EquitySymbol;
 import com.baml.matching.symbols.EquitySymbolCache;
 import com.baml.matching.types.OrderType;
 import com.baml.matching.types.Side;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Collection;
@@ -40,6 +42,11 @@ public class EQOrder implements Order {
     private double lastQty = 0.0d;      //Last Executed Qty
 
     private String currency;
+
+    @Getter @Setter
+    private long receivedTS;
+    @Getter @Setter
+    private long executionTS;
 
     private final Map<Long,Trade> tradeMap = new ConcurrentHashMap<>();
 

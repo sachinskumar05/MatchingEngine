@@ -3,6 +3,7 @@ package com.baml.matching.exchange.crossing;
 import com.baml.matching.exchange.EquityOrderBook;
 import com.baml.matching.exchange.order.EQOrder;
 import com.baml.matching.types.Side;
+import com.baml.matching.util.MEDateUtils;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
@@ -96,6 +97,9 @@ public class CrossingProcessor {
 
                             //# Generate the passive executions
                             bestOppositeOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, eqOrder.getClientOrderId());
+                            long transactionTime = MEDateUtils.getCurrentMillis();
+                            eqOrder.setExecutionTS(transactionTime);
+                            bestOppositeOrder.setExecutionTS(transactionTime);
                         } finally {
                             log.debug(()->"Releasing Transaction Lock for matching");
                             equityOrderBook.writeLock.unlock();

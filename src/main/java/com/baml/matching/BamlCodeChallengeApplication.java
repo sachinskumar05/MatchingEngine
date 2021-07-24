@@ -41,22 +41,21 @@ public class BamlCodeChallengeApplication {
 
 		String symbol = "BAC";
 
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 200, OrderType.LIMIT, 1));
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.25, 100, OrderType.LIMIT, 1));
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 100, OrderType.LIMIT, 1));
+		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 200, OrderType.LIMIT));
+		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.25, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 100, OrderType.LIMIT));
 
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.20, 200, OrderType.LIMIT, 1));
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 100, OrderType.LIMIT, 1));
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 200, OrderType.LIMIT, 1));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.20, 200, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 200, OrderType.LIMIT));
 
 		try {
+			final EquitySymbol symbolBAC = EquitySymbolCache.get(symbol);
 
 			for (int i = 0; i < 20; i++) {
 				MEDateUtils.pause(5000);
-				final EquitySymbol symbolBAC = EquitySymbolCache.get(symbol);
-				log.info( "Order {}" ,  ()-> equityMatchingEngine.getOrderBook(symbolBAC));
-				log.info("-----------------------------------------------------------------------");
-				log.info( "Order History {} " , ()-> equityMatchingEngine.getOrderBook(symbolBAC).getOrderHistory());
+				log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
+				log.info( "Order History {} " , equityMatchingEngine.getOrderBook(symbolBAC).getOrderHistory());
 			}
 
 		} catch (SymbolNotSupportedException e) {
