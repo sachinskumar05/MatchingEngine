@@ -128,7 +128,6 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 
 ### Prerequisites
-This is an example of how to list things you need to use the software and how to install them.
 
 * [Java Editor](https://www.jetbrains.com/idea/download/#section=windows)
 * [JDK 16](https://www.azul.com/downloads/?package=jdk)
@@ -141,12 +140,14 @@ This is an example of how to list things you need to use the software and how to
    ```
 2. import the extracted project in intellij 
 
+3. Run the main method com.baml.matching.BamlCodeChallengeApplication in eclipse
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 Run the Main class to start the project
 https://www.jetbrains.com/help/idea/run-debug-configuration-spring-boot.html
-
+Main Class: com.baml.matching.BamlCodeChallengeApplication
 
 
 ## Roadmap
@@ -159,7 +160,7 @@ See the [open issues](https://github.com/sachinskumar05/SachinBAMLCodeChallenge/
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -171,9 +172,7 @@ Contributions are what make the open source community such an amazing place to b
 
 <!-- LICENSE -->
 ## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
+Its private content (not to be distributed)
 
 
 <!-- CONTACT -->
