@@ -50,6 +50,12 @@ public class EQOrder implements Order {
 
     private final Map<Long,Trade> tradeMap = new ConcurrentHashMap<>();
 
+    /**
+     * Locking is always an overhead on performance
+     * therefore, instead of using Locks here on transaction I preferred Queuing on Executors which make it way faster compared to lock
+     * And whenever we need explicit locking, all I have to use below write lock in execute method within try finally block
+     * e.g. acquire lock at START EXECUTING and release lock when END EXECUTING
+     */
     private transient ReadWriteLock rwLock = new ReentrantReadWriteLock();
     private transient Lock writeLock = rwLock.writeLock();
 
