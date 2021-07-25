@@ -21,7 +21,7 @@ public class EQOrderPool {
 
         EQOrderFactory orderFactory = new EQOrderFactory();
 
-        pool = new ObjectPool(poolCfg, orderFactory);
+        pool = new ObjectPool<>(poolCfg, orderFactory);
     }
 
 
