@@ -13,3 +13,14 @@ app-cfg:
 
   aeron-driver-dir: ${MEDIA_DRIVER_DIR:./driver/aeron}
 
+pool-cfg:
+  maxWaitMilliseconds: 5000
+  # objects idle for 5 minutes will be destroyed to shrink the pool size
+  maxIdleMilliseconds: 300000
+  minSize: 5
+  maxSize: 20
+  partitionSize: 4
+  scavengeIntervalMilliseconds: 120000
+# avoid cleaning up all connections in the pool at the same time
+  scavengeRatio: 0.5
+  shutdownWaitMilliseconds: 30000

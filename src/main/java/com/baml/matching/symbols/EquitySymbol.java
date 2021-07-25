@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Immutable static data reference loaded at start up marked as tradable
+ * Immutable static data reference loaded at start up marked as good for trade
  * This class will be also used for trade time locking (write lock) on its orderBook
  */
 @Data
