@@ -63,7 +63,7 @@ public class EquityMatchingEngine implements MatchingEngine {
         EquityOrderBook ordBook = null;
         if (symbol instanceof EquitySymbol) {
             ordBook = EquityOrderBook.getBook((EquitySymbol) symbol);
-
+            ordBook.getOrderHistory();
         } else {
             log.error("Equity Matching Engine is expecting only Equity Symbol");
         }

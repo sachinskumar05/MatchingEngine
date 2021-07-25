@@ -41,7 +41,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
     private static final AtomicLong currentTradeId = new AtomicLong();
 
     private static final ExecutorService executorForCrossing = Executors.newSingleThreadExecutor();
-    private CrossingProcessor crossingProcessor = new CrossingProcessor();
+    private final transient CrossingProcessor crossingProcessor = new CrossingProcessor();
 
     private final transient ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final transient Lock writeLock = readWriteLock.writeLock();
@@ -136,8 +136,6 @@ public class EquityOrderBook implements OrderBook, Serializable {
     }
 
     public List<EQOrder> getBestBid() {
-//        if( fxBidOrderSortedMap.isEmpty() ) return new ArrayList<>();
-//        return fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
         if( fxBidOrderSortedMap.isEmpty() ) return new ArrayList<>();
         List<EQOrder> bestBid = fxBidOrderSortedMap.get(fxBidOrderSortedMap.lastKey());
         if(bestBid != null && !bestBid.isEmpty())

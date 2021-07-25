@@ -2,6 +2,7 @@ package com.baml.matching.exchange.executions;
 
 import com.baml.matching.types.ExecType;
 import com.baml.matching.types.OrderType;
+import lombok.Data;
 
 public class EQExecutionReport implements ExectionReport {
     private final String execId ;
@@ -12,6 +13,7 @@ public class EQExecutionReport implements ExectionReport {
     private final double execQty;
     private final double execPrice;
 
+    @Data
     public static class ERBuilder {
         private  String execId ;
         private  String orderId ;

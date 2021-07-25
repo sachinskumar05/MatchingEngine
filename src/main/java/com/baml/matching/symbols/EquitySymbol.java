@@ -37,4 +37,8 @@ public class EquitySymbol implements Symbol { /// when extended with more attrib
         return name.equals(equitySymbol.name);
     }
 
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }
