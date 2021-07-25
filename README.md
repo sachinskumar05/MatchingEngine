@@ -117,7 +117,6 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ### Built With
 
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [JDK 16](https://www.azul.com/downloads/?package=jdk)
 * [BPlusTree](https://creativecommons.org/publicdomain/zero/1.0/) Attempted to use org.ObjectLayout however, it does not sound feasible within given timeframe
 * [Spring Boot](https://spring.io/projects/spring-boot) Only Basic structural usages. Can remove this framework without pain
