@@ -11,17 +11,14 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
+[![LinkedIn][logo-shield]][logo-url]
+
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/sachinskumar05/SachinBAMLCodeChallenge">
-    <img src="images/Sachin_Fox_Cafe_Logo_BrandCrowd_Logo.png" alt="Sachin (The Architect)" width="80" height="80">
-  </a>
-
-  <h3 align="center">Solution</h3>
-
-
+  <h2 align="center">Solution</h2>
 <p>
+
 Assignment: Stock Exchange
 
 A Stock Exchange's Matching Engine is fundamental to all trading activities. Not only does it maintains and manages all of the investor’s orders, it also generates trades from them. The Matching Engine has to process a large amount of data at any given interval. On top of this, it has to accomplish multiple functions on the back of each order processed (e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
@@ -36,13 +33,16 @@ You are free to list any assumptions made during this exercise. For example, you
 Example:
 Say the order book, sorted by price and time looks like this:
 
-ID	Side	Time	Qty	Price	Qty	Time	Side
-3	 	 	 	20.30	200	09:05	Sell
-1	 	 	 	20.30	100	09:01	Sell
-2	 	 	 	20.25	100	09:03	Sell
-5	Buy	09:08	200	20.20	 	 	 
-4	Buy	09:06	100	20.15	 	 	 
-6	Buy	09:09	200	20.15	 	 	 
+```
+ID	Side	Time			Qty		Price	Qty		Time				Side
+3	    	    	   				20.30	200	162720422493167700		SELL
+1	    	    	   				20.30	100	162720422288333000		SELL
+2	    	    	   				20.25	100	162720422391511100		SELL
+5	BUY	162720422708261600	200		20.20	  	    	    	   	
+4	BUY	162720422603839300	100		20.15	  	    	    	   	
+6	BUY	162720422819156200	200		20.15	  	    	    	   	
+```
+
 NB: The order for sorting by time is ascending for buy-side orders and descending for sell-side orders, so that the order with the highest priority is always in the center and priorities decrease outwards (up or down, depending on the side).
 
 Now imagine a new limit order to "buy 250 shares at 20.35" comes in, then it will be filled, in this order:
@@ -53,11 +53,13 @@ Now imagine a new limit order to "buy 250 shares at 20.35" comes in, then it wil
 
 This leaves the order book in the following state:
 
-ID	Side	Time	Qty	Price	Qty	Time	Side
-3	 	 	 	20.30	150	09:05	Sell
-5	Buy	09:08	200	20.20	 	 	 
-4	Buy	09:06	100	20.15	 	 	 
-6	Buy	09:09	200	20.15
+```
+ID	Side	Time			Qty		Price	Qty		Time				Side
+3	    	    	   				20.30	150	162720422493167700		SELL
+5	BUY	162720422708261600	200		20.20	  	    	    	   	
+4	BUY	162720422603839300	100		20.15	  	    	    	   	
+6	BUY	162720422819156200	200		20.15	  	    	    	   	
+```
 
 Please do not share the question with anyone.
 
@@ -156,7 +158,7 @@ https://www.jetbrains.com/help/idea/run-debug-configuration-spring-boot.html
 
 
 
-<!-- ROADMAP -->
+<!-- ROADMAP --> 
 ## Roadmap
 
 See the [open issues](https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues) for a list of proposed features (and known issues).
@@ -205,3 +207,5 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/sa
 [issues-shield]: images/Issues.jpg
 [issues-url]: https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues
 [product-screenshot]: images/screenshot.png
+[logo-shield]: images/Sachin_Fox_Cafe_Logo_BrandCrowd_Logo_Effect.png
+[logo-url]: https://www.linkedin.com/in/kumarsac/
