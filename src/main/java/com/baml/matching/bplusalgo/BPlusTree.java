@@ -1,9 +1,7 @@
-package com.baml.matching.bplusTree;/*
- * Written by Gil Tene, Martin Thompson and Michael Barker, and released 
- * to the public domain, as explained at:
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
+package com.baml.matching.bplusalgo;
 
+
+import lombok.extern.log4j.Log4j2;
 import org.ObjectLayout.ReferenceArray;
 import org.ObjectLayout.StructuredArray;
 
@@ -12,6 +10,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/**
+ * I (Sachin Kumar) declare that this class is originally Written by Gil Tene, Martin Thompson and Michael Barker,
+ * and released to the public domain, as explained at: http://creativecommons.org/publicdomain/zero/1.0/
+ **/
+
+@Log4j2
 @SuppressWarnings("rawtypes")
 public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
     private final int nodeSize;
@@ -19,6 +23,8 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
     private final Leaf firstNode;
     private Node root;
     private int size;
+
+    private static final String SINGLE_CHILD_BRANCH_MOD_WARNING = "Should not be modifying branch with only child";
 
     public BPlusTree(int nodeSize) {
         this(nodeSize, null);
@@ -89,6 +95,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
         private Object val;
 
         public Entry() {
+            log.warn("Currently Not Implemented");
         }
 
         @Override
@@ -157,7 +164,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
 
             int search = binarySearch(this, 0, size, key, comparator);
             if (search > -1) {
-                Entry entry = get(search);
+                Entry entry = super.get(search);
                 oldVal = entry.getValue();
                 entry.setValue(val);
             } else if (size < capacity) {
@@ -167,24 +174,24 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
                 insert(search, key, val);
 
             } else {
-                Leaf next = Leaf.newInstance(capacity);
+                Leaf nextLeaf = Leaf.newInstance(capacity);
 
                 int halfSize = size / 2;
 
-                shallowCopy(this, halfSize, next, 0, halfSize);
+                shallowCopy(this, halfSize, nextLeaf, 0, halfSize);
                 clear(halfSize, size);
 
                 size = halfSize;
-                next.size = halfSize;
+                nextLeaf.size = halfSize;
 
-                if (compare(comparator, key, next.firstKey()) < 0) {
+                if (compare(comparator, key, nextLeaf.firstKey()) < 0) {
                     put(comparator, key, val);
                 } else {
-                    next.put(comparator, key, val);
+                    nextLeaf.put(comparator, key, val);
                 }
 
-                next.next = this.next;
-                this.next = next;
+                nextLeaf.next = this.next;
+                this.next = nextLeaf;
 
                 oldVal = Sentinal.SPLIT;
             }
@@ -194,7 +201,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
 
         private void clear(int offset, int count) {
             for (int i = offset; i < count; i++) {
-                get(i).clear();
+                super.get(i).clear();
             }
         }
 
@@ -204,7 +211,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
                 return null;
             }
 
-            return get(search).getValue();
+            return super.get(search).getValue();
         }
 
         @Override
@@ -229,29 +236,29 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
 
         @Override
         public Object firstKey() {
-            return get(0).getKey();
+            return super.get(0).getKey();
         }
 
         @Override
         public Object firstValue() {
-            return get(0).getValue();
+            return super.get(0).getValue();
         }
 
         @Override
         public Object lastKey() {
-            return get(size - 1).getKey();
+            return super.get(size - 1).getKey();
         }
 
         @Override
         public Object lastValue() {
-            return get(size - 1).getValue();
+            return super.get(size - 1).getValue();
         }
 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("[");
             for (int i = 0; i < size; i++) {
-                Entry entry = get(i);
+                Entry entry = super.get(i);
                 sb.append(entry.getKey()).append("->").append(entry.getValue());
                 sb.append(",");
             }
@@ -272,7 +279,8 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
         }
 
         public void mergeFrom(Node right) {
-            assert (right.size() == capacity / 2) || (size == capacity / 2) : "Should have exactly half capacity nodes";
+            if ((right.size() != capacity / 2) && (size != capacity / 2))
+                throw new AssertionError("Should have exactly half capacity nodes");
 
             Leaf leaf = (Leaf) right;
 
@@ -330,12 +338,12 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
         }
 
         private void append(Object key, Object val) {
-            get(size).set(key, val);
+            super.get(size).set(key, val);
             size++;
         }
 
         private void clearLast() {
-            get(size - 1).clear();
+            super.get(size - 1).clear();
             size--;
         }
 
@@ -358,7 +366,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
         }
         
         private Object getChild(int i) {
-            return get(i);
+            return super.get(i);
         }
 
         @Override
@@ -636,20 +644,20 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
 
         @Override
         public Object lastKey() {
-            assert size > 0 : "Should not be modifying branch with only child";
+            assert size > 0 : SINGLE_CHILD_BRANCH_MOD_WARNING;
 
             return getChild(arraySize() - 2);
         }
 
         @Override
         public Node lastValue() {
-            assert size > 0 : "Should not be modifying branch with only child";
+            assert size > 0 : SINGLE_CHILD_BRANCH_MOD_WARNING;
 
             return (Node) getChild(arraySize() - 1);
         }
 
         private void clearLast() {
-            assert size > 0 : "Should not be modifying branch with only child";
+            assert size > 0 : SINGLE_CHILD_BRANCH_MOD_WARNING;
 
             clear(arraySize() - 1);
             clear(arraySize() - 2);
@@ -762,7 +770,7 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
     interface Node {
         enum Sentinal {
             SPLIT
-        };
+        }
 
         Object get(Comparator comparator, Object key);
 
@@ -829,15 +837,13 @@ public class BPlusTree<K, V> implements Iterable<Map.Entry<K, V>> {
             if ((index + 1) < leaf.size()) {
                 index++;
 
-                Entry entry = leaf.get(index);
-                return entry;
+                return leaf.get(index);
 
             } else if (leaf.next() != null) {
                 leaf = leaf.next();
                 index = 0;
 
-                Entry entry = leaf.get(index);
-                return entry;
+                return leaf.get(index);
             }
 
             throw new NoSuchElementException();
