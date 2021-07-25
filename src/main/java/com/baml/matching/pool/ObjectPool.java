@@ -3,17 +3,16 @@ package com.baml.matching.pool;
 import com.baml.matching.config.PoolCfg;
 import com.baml.matching.exception.PoolExhaustedException;
 import com.baml.matching.exception.PoolInvalidObjectException;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
+@Log4j2
 public class ObjectPool<T> {
 
-    private static final Logger logger = Logger.getLogger(ObjectPool.class.getCanonicalName());
 
     private final PoolCfg config;
     private final ObjectFactory<T> factory;
@@ -60,7 +59,7 @@ public class ObjectPool<T> {
             if (factory.validate(result.getObject())) {
                 return result;
             } else {
-                logger.warning("Invalid object found in the pool, destroy it: " + result.getObject());
+                log.warn("Invalid object found in the pool, destroy it: " + result.getObject());
                 this.partitions[result.getPartition()].decreaseObject(result);
             }
         }
@@ -86,7 +85,7 @@ public class ObjectPool<T> {
     }
 
     private Poolable<T> waitWhenSubPoolIsFull(boolean noTimeout, ObjectPoolPartition<T> subPool) {
-        Poolable<T> freeObject;
+        Poolable<T> freeObject = null;
         try {
             if (noTimeout) {
                 freeObject = subPool.getObjectQueue().take();
@@ -97,7 +96,8 @@ public class ObjectPool<T> {
                 }
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e); // will never happen
+            log.error("Unexpected Thread Interrupted Exception while waiting on pool  ", e);
+            Thread.currentThread().interrupt();
         }
         return freeObject;
     }
@@ -107,9 +107,8 @@ public class ObjectPool<T> {
         ObjectPoolPartition<T> subPool = this.partitions[obj.getPartition()];
         try {
             subPool.getObjectQueue().put(obj);
-            if (logger.isLoggable(Level.FINE))
-                logger.fine("return object: queue size:" + subPool.getObjectQueue().size() +
-                    ", partition id:" + obj.getPartition());
+                log.debug("return object queue size: {}, partition id: {}" ,
+                        subPool.getObjectQueue().size(), obj.getPartition());
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // impossible for now, unless there is a bug, e,g. borrow once but return twice.
         }
@@ -146,9 +145,7 @@ public class ObjectPool<T> {
                     //noinspection BusyWait
                     Thread.sleep(config.getScavengeIntervalMilliseconds());
                     partition = ++partition % config.getPartitionSize();
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("scavenge sub pool " + partition);
-                    }
+                    log.debug("scavenge sub pool {}" , partition);
                     partitions[partition].scavenge();
                 } catch (InterruptedException ignored) {
                 }

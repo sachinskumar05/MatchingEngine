@@ -11,6 +11,7 @@ app-cfg:
   symbol-file: ${APP_SYMBOL_FILE_NAME:Symbols.csv}
   symbol-file-content-separator: ${APP_SYMBOL_FILE_CONTENT_SEPARATOR:,}
 
+  # Please ignore, not used at the moment, its for reminder to the future development
   aeron-driver-dir: ${MEDIA_DRIVER_DIR:./driver/aeron}
 
 pool-cfg:
