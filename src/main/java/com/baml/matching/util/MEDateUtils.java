@@ -24,14 +24,5 @@ public class MEDateUtils {
         return instant.getEpochSecond() * 100000000L + instant.getNano();
     }
 
-    public static void pause(long millis) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(millis);
-        } catch (InterruptedException e) {
-            log.error("Interrupted while sleep ", e);
-            Thread.currentThread().interrupt();
-        }
-    }
-
 
 }

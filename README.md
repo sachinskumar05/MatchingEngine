@@ -97,7 +97,7 @@ This is a sample coding challenge solution for BAML. (Prohibited to Share)
 
 Here's why I implemented this solution:
 * Being engaged and Focused on creating something amazing. 
-  A project that solves a small problem cna be extended for all 
+  A project that solves a small problem can be extended for all 
 * Re-Usability. It makes no sense to do same tasks over and over like creating a project from scratch
 * Following DRY principles to the rest of my life :smile:
 

@@ -8,6 +8,7 @@ import com.baml.matching.symbols.EquitySymbolCache;
 import com.baml.matching.types.OrderType;
 import com.baml.matching.types.Side;
 import com.baml.matching.util.MEDateUtils;
+import com.baml.matching.util.METhreadPoolUtils;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.boot.SpringApplication;
@@ -36,16 +37,16 @@ public class BamlCodeChallengeApplication {
 		String symbol = "BAC";
 
 		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 100, OrderType.LIMIT));
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.25, 100, OrderType.LIMIT));
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 200, OrderType.LIMIT));
 
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 100, OrderType.LIMIT));
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.20, 200, OrderType.LIMIT));
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 200, OrderType.LIMIT));
 
 		EquitySymbol symbolBAC = null;
@@ -56,14 +57,14 @@ public class BamlCodeChallengeApplication {
 			log.error("Failed to create order for {}", symbol, e );
 		}
 
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
 
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.25, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
-		MEDateUtils.pause(1000);
+		METhreadPoolUtils.pause(1000);
 		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
 
 		Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));

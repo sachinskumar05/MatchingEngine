@@ -22,14 +22,14 @@ import static com.baml.matching.types.OrderType.LIMIT;
 import static com.baml.matching.types.OrderType.MARKET;
 import static com.baml.matching.types.Side.BUY;
 import static com.baml.matching.types.Side.SELL;
+import static com.baml.matching.util.METhreadPoolUtils.getThreadFactory;
 
 @Log4j2
 public class EquityMatchingEngine implements MatchingEngine {
 
-
     private static final AtomicLong atomicOrderId = new AtomicLong();
 
-    private static final ExecutorService executorForMatching = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executorForMatching = Executors.newFixedThreadPool(20 );
 
     private EquityMatchingEngine() {
          for(EquitySymbol equitySymbol : EquitySymbolCache.getAllSymbols() ) {
