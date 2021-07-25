@@ -1,7 +1,8 @@
 spring:
   application:
     name: "@project.name@"
-
+  main:
+    banner-mode: off
 
 app-cfg:
   order-prefix-buy: ${BUY_ORD_PRIFX:B}
