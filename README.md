@@ -106,7 +106,13 @@ where future needs may be different. So I'll be adding more in the near future. 
 A list of commonly used resources that I find helpful are listed in the acknowledgements.
 <!-- built-with -->
 ### Assumptions
-* Client connection will be captured 
+* Client connection will be captured in a Client Adaptor class (In future it will be a FIX/TCP connection)
+* Kept only LIMIT Order under current scope, however tried MARKET order as well 
+* Only BUY / SELL supported at the moment 
+
+### Future Work TODO
+* Order Object Pooling (not tested but very close to be completed)
+* Gen2 OrderBook backed with BPlusTree partially implemented OrderBookV2 is WIP
 
 ### Built With
 
