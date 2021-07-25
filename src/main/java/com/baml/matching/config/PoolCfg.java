@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties("pool-cfg")
-public class PoolConfig {
+public class PoolCfg {
 
     private int maxWaitMilliseconds; // when pool is full, wait at most given seconds, then throw an exception
     private int maxIdleMilliseconds; // objects idle for 5 minutes will be destroyed to shrink the pool size

@@ -6,6 +6,7 @@ import com.baml.matching.types.Side;
 import com.baml.matching.util.MEDateUtils;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -28,12 +29,12 @@ public class CrossingProcessor {
 
             List<EQOrder> bestOppositeOrderList = equityOrderBook.getBestOppositeOrderList(side);
 
-            if ( null == bestOppositeOrderList || bestOppositeOrderList.isEmpty() ) {
+            if ( bestOppositeOrderList.isEmpty() ) {
                 log.info( ()->"No Opposite Order Exists for side = " + side );
                 return ;
             }
 
-            while (eqOrder.getLeavesQty() > 0 && !bestOppositeOrderList.isEmpty()) {
+            while (eqOrder.getLeavesQty() > 0 && (!bestOppositeOrderList.isEmpty()) ) {
 
                 log.debug("Started Processing --- {}, {}" , eqOrder::getClientOrderId, eqOrder::getLeavesQty);
                 if (checkIfBestOppositeExists(eqOrder, equityOrderBook, side, bestOppositeOrderList)) break;
@@ -42,7 +43,6 @@ public class CrossingProcessor {
                 log.debug( "--- clOrdId {}, Opposite Orders {}" , eqOrder::getClientOrderId, ()-> finalList);
 
                 bestOppositeOrderList = executeOrders(eqOrder, equityOrderBook, side, clOrdId, bestOppositeOrderList);
-                if (bestOppositeOrderList == null) break;
 
             }
 
@@ -61,13 +61,14 @@ public class CrossingProcessor {
                 log.debug(() -> "Matching can't be done as BUY and SELL both orders are MARKET Order");
                 continue;
             }
-            if (matchingTransaction(eqOrder, equityOrderBook, side, clOrdId, listIterator, bestOppositeOrder)) continue;
+
+            matchingTransaction(eqOrder, equityOrderBook, side, clOrdId, listIterator, bestOppositeOrder);
 
         }
         if (eqOrder.getLeavesQty() > 0 && bestOppositeOrderList.isEmpty()) {
             log.debug(()->"Check for the next best price opposite side of order " + eqOrder);
             bestOppositeOrderList = equityOrderBook.getBestOppositeOrderList(side);
-            if( null == bestOppositeOrderList || bestOppositeOrderList.isEmpty()) return null;
+            if( null == bestOppositeOrderList || bestOppositeOrderList.isEmpty()) return new ArrayList<>();
         }
         return bestOppositeOrderList;
     }
@@ -79,8 +80,7 @@ public class CrossingProcessor {
             return true;
         }
         double bestOppositePrice = equityOrderBook.getBestOppositePrice(eqOrder, side);
-        if(Double.isNaN(bestOppositePrice) ) return true;
-        return false;
+        return (Double.isNaN(bestOppositePrice) ) ;
     }
 
     private boolean matchingTransaction(EQOrder eqOrder, EquityOrderBook equityOrderBook,
@@ -105,21 +105,15 @@ public class CrossingProcessor {
                 log.warn(() -> "Match qty should be larger than 0, no matching found");
                 return true;
             }
-            double matchPx = bestOppositeOrder.getOrdPx();
-            if (eqOrder.getOrderType() == MARKET || bestOppositeOrder.getOrderType() == LIMIT) {
-                matchPx = bestOppositeOrder.getOrdPx();
-            } else if (eqOrder.getOrderType() == LIMIT || bestOppositeOrder.getOrderType() == MARKET) {
-                matchPx = eqOrder.getOrdPx();
-            }
+            double matchPx = getMatchPx(eqOrder, bestOppositeOrder);
 
-            double finalMatchPx = matchPx;
             log.debug("Match price {} for side {} and clOrdId {} with opposite side {} and clOrdId {}",
-                    () -> finalMatchPx, () -> side, () -> clOrdId, bestOppositeOrder::getSide,
+                    () -> matchPx, () -> side, () -> clOrdId, bestOppositeOrder::getSide,
                     bestOppositeOrder::getClientOrderId);
 
             try {
-//                equityOrderBook.writeLock.lock();
-                log.debug(() -> "Acquiring Transaction Lock for matching on OrderBook of symbol = " + equityOrderBook.getSymbol());
+                log.debug("TRANSACTION STARTS on Symbol {} between {} and {}",
+                        equityOrderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
                 //Generate aggressive trade
                 eqOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, bestOppositeOrder.getClientOrderId());
 
@@ -150,11 +144,22 @@ public class CrossingProcessor {
                 }
 
             } finally {
-                log.debug(() -> "Releasing Transaction Lock for matching");
-//                equityOrderBook.writeLock.unlock();
+                log.debug("TRANSACTION ENDS on Symbol {} between {} and {}",
+                        equityOrderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
+
             }
         }
         return false;
+    }
+
+    private double getMatchPx(EQOrder eqOrder, EQOrder bestOppositeOrder) {
+        double matchPx = bestOppositeOrder.getOrdPx();
+        if (eqOrder.getOrderType() == MARKET || bestOppositeOrder.getOrderType() == LIMIT) {
+            matchPx = bestOppositeOrder.getOrdPx();
+        } else if (eqOrder.getOrderType() == LIMIT || bestOppositeOrder.getOrderType() == MARKET) {
+            matchPx = eqOrder.getOrdPx();
+        }
+        return matchPx;
     }
 
 

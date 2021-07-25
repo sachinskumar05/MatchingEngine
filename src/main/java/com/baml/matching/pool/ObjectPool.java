@@ -1,6 +1,6 @@
 package com.baml.matching.pool;
 
-import com.baml.matching.config.PoolConfig;
+import com.baml.matching.config.PoolCfg;
 import com.baml.matching.exception.PoolExhaustedException;
 import com.baml.matching.exception.PoolInvalidObjectException;
 
@@ -15,18 +15,18 @@ public class ObjectPool<T> {
 
     private static final Logger logger = Logger.getLogger(ObjectPool.class.getCanonicalName());
 
-    private final PoolConfig config;
+    private final PoolCfg config;
     private final ObjectFactory<T> factory;
     private final ObjectPoolPartition<T>[] partitions;
     private Scavenger scavenger;
     private volatile boolean shuttingDown;
 
-    public ObjectPool(PoolConfig poolConfig, ObjectFactory<T> objectFactory) {
-        this.config = poolConfig;
+    public ObjectPool(PoolCfg poolCfg, ObjectFactory<T> objectFactory) {
+        this.config = poolCfg;
         this.factory = objectFactory;
         this.partitions = new ObjectPoolPartition[config.getPartitionSize()];
         for (int i = 0; i < config.getPartitionSize(); i++) {
-            partitions[i] = new ObjectPoolPartition<>(this, i, config, objectFactory, createBlockingQueue(poolConfig));
+            partitions[i] = new ObjectPoolPartition<>(this, i, config, objectFactory, createBlockingQueue(poolCfg));
         }
         if (config.getScavengeIntervalMilliseconds() > 0) {
             this.scavenger = new Scavenger();
@@ -34,8 +34,8 @@ public class ObjectPool<T> {
         }
     }
 
-    protected BlockingQueue<Poolable<T>> createBlockingQueue(PoolConfig poolConfig) {
-        return new ArrayBlockingQueue<>(poolConfig.getMaxSize());
+    protected BlockingQueue<Poolable<T>> createBlockingQueue(PoolCfg poolCfg) {
+        return new ArrayBlockingQueue<>(poolCfg.getMaxSize());
     }
 
     /**

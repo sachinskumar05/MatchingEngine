@@ -1,6 +1,6 @@
 package com.baml.matching.pool;
 
-import com.baml.matching.config.PoolConfig;
+import com.baml.matching.config.PoolCfg;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,13 +13,13 @@ public class ObjectPoolPartition<T> {
     private static final Logger logger = Logger.getLogger(ObjectPoolPartition.class.getName());
 
     private final ObjectPool<T> pool;
-    private final PoolConfig config;
+    private final PoolCfg config;
     private final int partition;
     private final BlockingQueue<Poolable<T>> objectQueue;
     private final ObjectFactory<T> objectFactory;
     private int totalCount;
 
-    public ObjectPoolPartition(ObjectPool<T> pool, int partition, PoolConfig config,
+    public ObjectPoolPartition(ObjectPool<T> pool, int partition, PoolCfg config,
                                ObjectFactory<T> objectFactory, BlockingQueue<Poolable<T>> queue) {
         this.pool = pool;
         this.config = config;

@@ -1,18 +1,18 @@
 package com.baml.matching.pool;
 
-import com.baml.matching.config.PoolConfig;
+import com.baml.matching.config.PoolCfg;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 
 import java.util.concurrent.BlockingQueue;
 
 public class DisruptorObjectPool<T> extends ObjectPool<T> {
 
-    public DisruptorObjectPool(PoolConfig poolConfig, ObjectFactory<T> objectFactory) {
-        super(poolConfig, objectFactory);
+    public DisruptorObjectPool(PoolCfg poolCfg, ObjectFactory<T> objectFactory) {
+        super(poolCfg, objectFactory);
     }
 
     @Override
-    protected BlockingQueue<Poolable<T>> createBlockingQueue(PoolConfig config) {
+    protected BlockingQueue<Poolable<T>> createBlockingQueue(PoolCfg config) {
         return new DisruptorBlockingQueue<>(config.getMaxSize());
     }
 
