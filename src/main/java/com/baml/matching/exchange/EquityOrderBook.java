@@ -266,7 +266,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
         return sb.toString();
     }
 
-    public String formatAsk() {
+    private String formatAsk() {
         StringBuilder sb = new StringBuilder("\n");
         List<EQOrder> res = new ArrayList<>();
         for ( Map.Entry<Double, List<EQOrder>> entry : fxAskOrderSortedMap.entrySet() ) {
@@ -286,7 +286,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
         return sb.toString();
     }
 
-    public String formatBid() {
+    private String formatBid() {
         StringBuilder sb = new StringBuilder();
         List<EQOrder> res = new ArrayList<>();
         for ( Map.Entry<Double, List<EQOrder>> entry : fxBidOrderSortedMap.entrySet() ) {

@@ -66,9 +66,7 @@ public class EQOrder implements Order {
     public Trade execute(long execId, double fillPx, double fillQty, String ctrbClOrdId) {
         Trade trade = null;
         try {
-            writeLock.lock();
-            log.debug( ()->"acquired order lock " );
-            log.debug( "executing execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
+            log.debug( "START EXECUTING execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
                                 execId, fillPx, fillQty, clOrdId, leavesQty);
             if (leavesQty == 0) {
                 log.info("Order is fully filled clOrdId={}, orderId={}", clOrdId, orderId);
@@ -102,8 +100,9 @@ public class EQOrder implements Order {
         } catch (Exception e) {
             log.error(this.toString(), e);
         } finally {
-            log.debug(()->"unlocking order lock ");
-            writeLock.unlock();
+            log.debug( "END EXECUTING execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
+                    execId, fillPx, fillQty, clOrdId, leavesQty);
+
         }
         return trade;
     }
@@ -113,8 +112,8 @@ public class EQOrder implements Order {
     public Trade rollback( long execId, double fillPx, double fillQty, String ctrbClOrdId ) {
         Trade trade = null;
         try {
-            writeLock.lock();
-            log.debug( ()->"will rollback execId,fillPx,fillQty=" + execId +"," + fillPx + "," + fillQty + ",  leavesQty=" + leavesQty);
+            log.debug( "START ROLLBACK execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
+                    execId, fillPx, fillQty, clOrdId, leavesQty);
 
             double avgPxComputed = ((this.avgPx / this.cumQty) - fillPx) / (this.cumQty - fillQty);
             double leavesQtyComputed = this.leavesQty + fillQty;
@@ -130,8 +129,8 @@ public class EQOrder implements Order {
         } catch (Exception e) {
             log.error(this.toString(), e);
         } finally {
-            log.debug(()->"unlocking write lock ");
-            writeLock.unlock();
+            log.debug( "END ROLLBACK execId,fillPx,fillQty=[{},{},{}] for clOrdId {} leavesQty is {} ",
+                    execId, fillPx, fillQty, clOrdId, leavesQty);
         }
         return trade;
     }
