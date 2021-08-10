@@ -2,7 +2,6 @@ package com.baml.matching.symbols;
 
 
 import com.baml.matching.config.AppCfg;
-import com.baml.matching.exception.OrderCreationException;
 import com.baml.matching.exception.SymbolNotSupportedException;
 import com.baml.matching.util.MEFileUtils;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,13 +36,13 @@ public class EquitySymbolCache {
     @PostConstruct
     public void init() {
         //Read from file / stream / messaging system or flat file and create the EquitySymbol cache
-        //for illustration I am hardcoding the array and keeping just one symbol here as asked in task BTC/USD
+        //for illustration I am hardcoding the array and keeping just one symbol here as asked in task
         // list is for illustration only, Will read it from data source
         Path dataPathDir = Paths.get(appCfg.getDataDir());
         String symbolFilename = appCfg.getSymbolFile();
         String separator = appCfg.getSymbolFileContentSeparator();
         Path symbolFilePath = dataPathDir.resolve(symbolFilename);
-        try ( Stream<String> lines = Files.lines(symbolFilePath) ){
+        try ( Stream<String> lines = Files.lines(symbolFilePath) ) {
             lines.forEach(ln -> {
                 log.info("Symbol details {}", ln);
                 String []symbolAttributes = ln.split(separator);

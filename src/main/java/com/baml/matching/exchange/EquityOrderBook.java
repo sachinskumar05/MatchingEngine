@@ -40,7 +40,7 @@ public class EquityOrderBook implements OrderBook, Serializable {
 
     private static final AtomicLong currentTradeId = new AtomicLong();
 
-    private static final ExecutorService executorForCrossing = Executors.newSingleThreadExecutor();
+    private final transient ExecutorService executorForCrossing = Executors.newSingleThreadExecutor();
     private final transient CrossingProcessor crossingProcessor = new CrossingProcessor();
 
     private final transient ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
