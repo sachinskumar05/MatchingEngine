@@ -3,7 +3,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <p align="center">
-  <h2 align="center">Assignment: Stock Exchange Matching Engine</h2>
+  <h2 align="center">A Simple Stock Exchange Matching Engine</h2>
    <h3 align="center">Prohibited to Share</h3>
 <p>
 
@@ -54,11 +54,11 @@ Please do not share the question with anyone.
     This is a code implementation for the task within given time frame!
     <br />
     <br />
-    <a href="https://github.com/sachinskumar05/SachinBAMLCodeChallenge">View Demo</a>
+    <a href="https://github.com/sachinskumar05/MatchingEngine">View Demo</a>
     ·
-    <a href="https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues">Report Bug</a>
+    <a href="https://github.com/sachinskumar05/MatchingEngine/issues">Report Bug</a>
     ·
-    <a href="https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues">Request Feature</a>
+    <a href="https://github.com/sachinskumar05/MatchingEngine/issues">Request Feature</a>
   </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -93,7 +93,7 @@ Please do not share the question with anyone.
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This is a sample coding challenge solution for BAML. (Prohibited to Share)
+This is a sample matching engine solution. (Not for public sharing)
 
 Here's why I implemented this solution:
 * Being engaged and Focused on creating something amazing. 
