@@ -7,9 +7,9 @@
    <h3 align="center">Prohibited to Share</h3>
 <p>
 
-A Stock Exchange's Matching Engine is fundamental to all trading activities. Not only does it maintains and manages all of the investor’s orders, it also generates trades from them. The Matching Engine has to process a large amount of data at any given interval. On top of this, it has to accomplish multiple functions on the back of each order processed (e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
+A Stock Exchange's Matching Engine is fundamental to all trading activities. Not only does it maintain and manages all the investor’s orders, it also generates trades from them. The Matching Engine has to process a large amount of data at any given interval. On top of this, it has to accomplish multiple functions on the back of each order processed (e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
 
-Design a Stock Exchange's Matching Engine’s crossing functionality, storing orders and generate any resulting trades from new orders. Below are some of the requirements:
+Design a Stock Exchange's Matching Engine’s crossing functionality, storing orders and generate any resulting trades from new orders. Below are some requirements:
 1.	Implement in Java
 2.	Be able to handle multiple client connections into the Engine
 3.	Solution needs to be thread safe
@@ -178,7 +178,7 @@ Its private content (not to be distributed)
 <!-- CONTACT -->
 ## Contact
 Sachin Kumar - [@email]() - sachin.skumar05@gmail.com
-Project Link: [https://github.com/your_username/repo_name](https://github.com/sachinskumar05/SachinBAMLCodeChallenge)
+Project Link: [https://github.com/your_username/repo_name](https://github.com/sachinskumar05/MatchigEngine)
 
 
 
@@ -195,7 +195,7 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/sa
 [linkedin-shield]: images/LinkedIn.jpg
 [linkedin-url]: https://www.linkedin.com/in/kumarsac/
 [issues-shield]: images/Issues.jpg
-[issues-url]: https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues
+[issues-url]: https://github.com/sachinskumar05/MatchigEngine/issues
 [product-screenshot]: images/screenshot.png
 [logo-shield]: images/Sachin_Fox_Cafe_Logo_BrandCrowd_Logo_Effect.png
 [logo-url]: https://www.linkedin.com/in/kumarsac/

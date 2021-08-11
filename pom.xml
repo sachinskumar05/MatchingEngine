@@ -8,11 +8,11 @@
 		<version>2.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.baml.matching</groupId>
-	<artifactId>BAMLMatchingEngine</artifactId>
+	<groupId>com.sk.matching</groupId>
+	<artifactId>MatchingEngine</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>BAMLMatchingEngine</name>
-	<description>BAML Code Challenge Matching Engine</description>
+	<name>MatchingEngine</name>
+	<description>A Simple Matching Engine</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
