@@ -140,19 +140,19 @@ A list of commonly used resources that I find helpful are listed in the acknowle
    ```
 2. import the extracted project in intellij 
 
-3. Run the main method com.baml.matching.BamlCodeChallengeApplication in eclipse
+3. Run the main method com.sk.matching.MatchingEngineApp in eclipse
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 Run the Main class to start the project
 https://www.jetbrains.com/help/idea/run-debug-configuration-spring-boot.html
-Main Class: com.baml.matching.BamlCodeChallengeApplication
+Main Class: com.sk.matching.MatchingEngineApp
 
 
 ## Roadmap
 
-See the [open issues](https://github.com/sachinskumar05/SachinBAMLCodeChallenge/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/sachinskumar05/MatchingEngine/issues) for a list of proposed features (and known issues).
 
 
 ##TEST
