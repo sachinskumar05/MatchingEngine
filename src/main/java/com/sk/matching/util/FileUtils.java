@@ -9,9 +9,9 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 @Log4j2
-public class MEFileUtils {
+public class FileUtils {
 
-    private MEFileUtils(){throw new UnsupportedOperationException("Instantiation Restricted");}
+    private FileUtils(){throw new UnsupportedOperationException("Instantiation Restricted");}
 
     public static String getLastLineOf(Path filePath) {
         try (Stream<String> stream = Files.lines(filePath) ) {

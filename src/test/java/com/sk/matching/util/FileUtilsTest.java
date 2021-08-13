@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Log4j2
-class MEFileUtilsTest {
+class FileUtilsTest {
 
     @BeforeEach
     void setUp() {
@@ -23,12 +23,16 @@ class MEFileUtilsTest {
     @Test
     void testGetLastLineOf() {
         Path testFilePath = Paths.get("./temp/testFileUtils.txt");
-        String lastLine = "THIS is Test Last Line";
+        String expectedLineStr = "THIS is Test Last Line";
         try {
-            Files.write(testFilePath, lastLine.getBytes(StandardCharsets.UTF_8));
-            String result = MEFileUtils.getLastLineOf(testFilePath);
+            Path parentDir = testFilePath.getParent();
+            if ( !Files.exists(parentDir) ) {
+                Files.createDirectories(parentDir);
+            }
+            Files.write(testFilePath, expectedLineStr.getBytes(StandardCharsets.UTF_8));
+            String result = FileUtils.getLastLineOf(testFilePath);
             log.info("Result {}", result);
-            Assertions.assertEquals(lastLine, result);
+            Assertions.assertEquals(expectedLineStr, result);
             Files.deleteIfExists(testFilePath);
         } catch (IOException e) {
             log.error("Failed to execute test case ", e);

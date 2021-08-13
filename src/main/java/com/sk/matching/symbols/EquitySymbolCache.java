@@ -3,7 +3,7 @@ package com.sk.matching.symbols;
 
 import com.sk.matching.config.AppCfg;
 import com.sk.matching.exception.SymbolNotSupportedException;
-import com.sk.matching.util.MEFileUtils;
+import com.sk.matching.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,11 @@ public class EquitySymbolCache {
 
     @Autowired
     private AppCfg appCfg;
+
+    public EquitySymbolCache(){}
+    public EquitySymbolCache(AppCfg appCfg) {
+        this.appCfg = appCfg;
+    }
 
     private static final String SYMBOL_FILE_EXT = ".csv";
     private static final Map<String, EquitySymbol> symbolMap = new ConcurrentHashMap<>();
@@ -51,7 +56,7 @@ public class EquitySymbolCache {
                     Path syPxFile = dataPathDir.resolve(String.format("%s%s",sy,SYMBOL_FILE_EXT) );
                     log.info("Loading last price from {}", syPxFile);
                     if ( Files.exists(syPxFile) ) {
-                        String lastClosingLine = MEFileUtils.getLastLineOf(syPxFile);
+                        String lastClosingLine = FileUtils.getLastLineOf(syPxFile);
                         if(null != lastClosingLine && !lastClosingLine.isBlank()) {
 
                             String[] lastClosingDetails = lastClosingLine.split(separator);
@@ -83,6 +88,10 @@ public class EquitySymbolCache {
             if (null == equitySymbol) {
                 throw new SymbolNotSupportedException(String.format("Symbol not supported %s ", symbolStr));
             }
+        } else {
+            throw new SymbolNotSupportedException(
+                    String.format("Equity Symbol Cache is not initialized therefore, can't support symbol %s", symbolStr)
+            );
         }
         return equitySymbol;
     }
