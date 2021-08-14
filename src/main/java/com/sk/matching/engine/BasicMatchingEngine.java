@@ -45,12 +45,7 @@ public class BasicMatchingEngine implements MatchingEngine {
 
     @Override
     public OrderBook getOrderBook(Symbol symbol) {
-        if (symbol instanceof Symbol) {
-            return OrderBook.getBook((Symbol) symbol);
-        } else {
-            log.error("Equity Matching Engine is expecting only Equity Symbol");
-        }
-        return null;
+        return OrderBook.getBook(symbol);
     }
 
     @Override

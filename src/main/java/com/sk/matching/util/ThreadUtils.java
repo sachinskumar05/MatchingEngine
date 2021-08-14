@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Log4j2
-public class METhreadPoolUtils {
+public class ThreadUtils {
 
-    private METhreadPoolUtils(){ throw new UnsupportedOperationException("Instantiation Restricted"); }
+    private ThreadUtils(){ throw new UnsupportedOperationException("Instantiation Restricted"); }
 
     public static ThreadFactory getThreadFactory(String poolName){
         return new ThreadFactory() {

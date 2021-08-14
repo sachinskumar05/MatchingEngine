@@ -68,6 +68,7 @@ public class OrderBook implements Serializable {
 
 
     public boolean setOrder(GenOrder genOrder) {
+        Objects.requireNonNull(genOrder);
         orderHistory.put(genOrder.getOrderId(), genOrder);
         if (genOrder.getSide() == BUY) {
             return setBid(genOrder);
@@ -161,6 +162,7 @@ public class OrderBook implements Serializable {
     }
 
     public boolean removeBid(GenOrder genOrder) {
+        Objects.requireNonNull(genOrder);
         if( bidOrderSortedMap.isEmpty() ) {
             log.error(" fxBidOrderSortedMap is empty, potential indication of race condition bug, can't removed order {}" , ()-> genOrder);
             return false;
@@ -199,6 +201,7 @@ public class OrderBook implements Serializable {
     }
 
     public boolean removeAsk(GenOrder genOrder) {
+        Objects.requireNonNull(genOrder);
         if( askOrderSortedMap.isEmpty() ) {
             log.error(" fxAskOrderSortedMap is empty, potential indication of race condition bug, can't removed order {}" , ()-> genOrder);
             return false;
