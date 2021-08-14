@@ -3,7 +3,7 @@ package com.sk.matching;
 import com.sk.matching.client.ClientWorker;
 import com.sk.matching.engine.EquityMatchingEngine;
 import com.sk.matching.exception.SymbolNotSupportedException;
-import com.sk.matching.symbols.EquitySymbol;
+import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.EquitySymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
@@ -18,12 +18,12 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 @SpringBootApplication
-public class BamlCodeChallengeApplication {
+public class MatchingEngineApplication {
 
 
 	public static void main(String[] args) {
 		log.info("Application starting");
-		SpringApplication.run(BamlCodeChallengeApplication.class, args);
+		SpringApplication.run(MatchingEngineApplication.class, args);
 
 		EquityMatchingEngine equityMatchingEngine = EquityMatchingEngine.getInstance();
 
@@ -33,35 +33,35 @@ public class BamlCodeChallengeApplication {
 
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-		String symbol = "BAC";
+		final String BAC = "BAC";
+		log.info("Trading simulation will start on {}", BAC);
+		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.30, 100, OrderType.LIMIT));
+		METhreadPoolUtils.pause(1000);
+		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.25, 100, OrderType.LIMIT));
+		METhreadPoolUtils.pause(1000);
+		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.30, 200, OrderType.LIMIT));
 
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 100, OrderType.LIMIT));
 		METhreadPoolUtils.pause(1000);
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.25, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.15, 100, OrderType.LIMIT));
 		METhreadPoolUtils.pause(1000);
-		executorService.submit(()-> clientA.createAndSubmitOrder(symbol, Side.SELL, 20.30, 200, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.20, 200, OrderType.LIMIT));
+		METhreadPoolUtils.pause(1000);
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.15, 200, OrderType.LIMIT));
 
-		METhreadPoolUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 100, OrderType.LIMIT));
-		METhreadPoolUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.20, 200, OrderType.LIMIT));
-		METhreadPoolUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.15, 200, OrderType.LIMIT));
-
-		EquitySymbol symbolBAC = null;
+		Symbol symbolBAC = null;
 
 		try {
-			symbolBAC = EquitySymbolCache.get(symbol);
+			symbolBAC = EquitySymbolCache.get(BAC);
 		} catch (SymbolNotSupportedException e) {
-			log.error("Failed to create order for {}", symbol, e );
+			log.error("Failed to create order for {}", BAC, e );
 		}
 
 		METhreadPoolUtils.pause(1000);
 		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
 
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.25, 100, OrderType.LIMIT));
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 100, OrderType.LIMIT));
-		executorService.submit(()-> clientB.createAndSubmitOrder(symbol, Side.BUY, 20.30, 50, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.25, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 100, OrderType.LIMIT));
+		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
 		METhreadPoolUtils.pause(1000);
 		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));

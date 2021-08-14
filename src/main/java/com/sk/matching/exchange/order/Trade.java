@@ -1,6 +1,6 @@
 package com.sk.matching.exchange.order;
 
-import com.sk.matching.symbols.EquitySymbol;
+import com.sk.matching.symbols.Symbol;
 import com.sk.matching.types.Side;
 import lombok.extern.log4j.Log4j2;
 
@@ -12,18 +12,18 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class Trade {
     public final long orderId;
-    public final EquitySymbol equitySymbol;
+    public final Symbol symbol;
     public final double tradePrice;
     public final double tradeQty;
     public final Side tradeSide;
     public final long tradeId;
     public final String counterClOrdIdId;
 
-    public Trade(long orderId, EquitySymbol equitySymbol,
+    public Trade(long orderId, Symbol symbol,
                  double tradePrice, double tradeQty,
                  Side tradeSide, long tradeId, String counterClOrdIdId){
         this.orderId = orderId;
-        this.equitySymbol = equitySymbol;
+        this.symbol = symbol;
         this.tradePrice = tradePrice;
         this.tradeQty = tradeQty;
         this.tradeSide = tradeSide;
@@ -35,7 +35,7 @@ public class Trade {
     public String toString() {
         return "Trade{" +
                 "orderId=" + orderId +
-                ", equitySymbol=" + equitySymbol +
+                ", equitySymbol=" + symbol +
                 ", tradePrice=" + tradePrice +
                 ", tradeQty=" + tradeQty +
                 ", tradeSide=" + tradeSide +

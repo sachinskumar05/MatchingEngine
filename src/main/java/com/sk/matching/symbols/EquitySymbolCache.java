@@ -32,7 +32,7 @@ public class EquitySymbolCache {
     }
 
     private static final String SYMBOL_FILE_EXT = ".csv";
-    private static final Map<String, EquitySymbol> symbolMap = new ConcurrentHashMap<>();
+    private static final Map<String, Symbol> symbolMap = new ConcurrentHashMap<>();
 
     /**
      * KISS => Keeping it Super Simple [for demo]
@@ -62,7 +62,7 @@ public class EquitySymbolCache {
                             String[] lastClosingDetails = lastClosingLine.split(separator);
                             Double lastPx = Double.valueOf(lastClosingDetails[4]);
 
-                            symbolMap.computeIfAbsent(sy, s->new EquitySymbol(sy, lastPx));
+                            symbolMap.computeIfAbsent(sy, s->new Symbol(sy, lastPx));
 
                         }
                     } else {
@@ -81,11 +81,11 @@ public class EquitySymbolCache {
 
     }
 
-    public static EquitySymbol get(String symbolStr) throws SymbolNotSupportedException {
-        EquitySymbol equitySymbol = null;
+    public static Symbol get(String symbolStr) throws SymbolNotSupportedException {
+        Symbol symbol = null;
         if( isInitialized() ) {
-            equitySymbol = symbolMap.get(symbolStr);
-            if (null == equitySymbol) {
+            symbol = symbolMap.get(symbolStr);
+            if (null == symbol) {
                 throw new SymbolNotSupportedException(String.format("Symbol not supported %s ", symbolStr));
             }
         } else {
@@ -93,12 +93,12 @@ public class EquitySymbolCache {
                     String.format("Equity Symbol Cache is not initialized therefore, can't support symbol %s", symbolStr)
             );
         }
-        return equitySymbol;
+        return symbol;
     }
 
 
-    public static List<EquitySymbol> getAllSymbols() {
-        List<EquitySymbol> result = new ArrayList<>();
+    public static List<Symbol> getAllSymbols() {
+        List<Symbol> result = new ArrayList<>();
         if(isInitialized())
             result.addAll(symbolMap.values());//Returning an copy of list to keep cache not exposed for un expected mutations
         return result;

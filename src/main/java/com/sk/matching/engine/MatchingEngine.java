@@ -1,7 +1,7 @@
 package com.sk.matching.engine;
 
 import com.sk.matching.exception.OrderCreationException;
-import com.sk.matching.exchange.OrderBook;
+import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.Order;
 import com.sk.matching.exchange.order.Trade;
 import com.sk.matching.symbols.Symbol;

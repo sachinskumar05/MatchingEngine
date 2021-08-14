@@ -1,14 +1,12 @@
 package com.sk.matching.engine;
 
 import com.sk.matching.exception.OrderCreationException;
-import com.sk.matching.exchange.EquityOrderBook;
-import com.sk.matching.exchange.OrderBook;
+import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.EQOrder;
 import com.sk.matching.exchange.order.Order;
 import com.sk.matching.exchange.order.Trade;
-import com.sk.matching.symbols.EquitySymbol;
-import com.sk.matching.symbols.EquitySymbolCache;
 import com.sk.matching.symbols.Symbol;
+import com.sk.matching.symbols.EquitySymbolCache;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -30,8 +28,8 @@ public class EquityMatchingEngine implements MatchingEngine {
     private static final ExecutorService executorForMatching = Executors.newFixedThreadPool(20 );
 
     private EquityMatchingEngine() {
-         for(EquitySymbol equitySymbol : EquitySymbolCache.getAllSymbols() ) {
-            EquityOrderBook.getBook(equitySymbol);//Pre initialization
+         for(Symbol symbol : EquitySymbolCache.getAllSymbols() ) {
+            OrderBook.getBook(symbol);//Pre initialization
         }
     }
 
@@ -47,8 +45,8 @@ public class EquityMatchingEngine implements MatchingEngine {
 
     @Override
     public OrderBook getOrderBook(Symbol symbol) {
-        if (symbol instanceof EquitySymbol) {
-            return EquityOrderBook.getBook((EquitySymbol) symbol);
+        if (symbol instanceof Symbol) {
+            return OrderBook.getBook((Symbol) symbol);
         } else {
             log.error("Equity Matching Engine is expecting only Equity Symbol");
         }
@@ -58,9 +56,9 @@ public class EquityMatchingEngine implements MatchingEngine {
     @Override
     public List<Trade> getTrades(Symbol symbol) {
         List<Trade> tradeList = new ArrayList<>();
-        EquityOrderBook ordBook = null;
-        if (symbol instanceof EquitySymbol) {
-            ordBook = EquityOrderBook.getBook((EquitySymbol) symbol);
+        OrderBook ordBook = null;
+        if (symbol instanceof Symbol) {
+            ordBook = OrderBook.getBook((Symbol) symbol);
             ordBook.getOrderHistory();
         } else {
             log.error("Equity Matching Engine is expecting only Equity Symbol");
@@ -83,7 +81,7 @@ public class EquityMatchingEngine implements MatchingEngine {
             return ;
         }
         //Locate the order book
-        EquityOrderBook orderBook = (EquityOrderBook) getOrderBook(eqOrder.getSymbol());
+        OrderBook orderBook = (OrderBook) getOrderBook(eqOrder.getSymbol());
         if(null == orderBook ) {
             throw new OrderCreationException("Unknown security/security received symbol in order " + eqOrder.getSymbol());
         }

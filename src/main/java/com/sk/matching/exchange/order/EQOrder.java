@@ -2,7 +2,7 @@ package com.sk.matching.exchange.order;
 
 import com.sk.matching.exception.OrderCreationException;
 import com.sk.matching.exception.SymbolNotSupportedException;
-import com.sk.matching.symbols.EquitySymbol;
+import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.EquitySymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
@@ -26,7 +26,7 @@ public class EQOrder implements Order {
 
     private final String clOrdId;
     private long orderId = Long.MIN_VALUE;
-    private final EquitySymbol equitySymbol;
+    private final Symbol symbol;
     private final Side side;
     private final OrderType orderType;
 
@@ -59,9 +59,9 @@ public class EQOrder implements Order {
 
     private AtomicBoolean isOpen = new AtomicBoolean(true);
 
-    private EQOrder(String clOrdId, EquitySymbol equitySymbol, Side side, OrderType orderType) {
+    private EQOrder(String clOrdId, Symbol symbol, Side side, OrderType orderType) {
         this.clOrdId = clOrdId;
-        this.equitySymbol = equitySymbol;
+        this.symbol = symbol;
         this.side = side;
         this.orderType = orderType;
     }
@@ -161,8 +161,8 @@ public class EQOrder implements Order {
         return clOrdId;
     }
 
-    public EquitySymbol getSymbol() {
-        return equitySymbol;
+    public Symbol getSymbol() {
+        return symbol;
     }
 
     public Side getSide() {
@@ -230,7 +230,7 @@ public class EQOrder implements Order {
     public static class Builder {
 
         private final String clOrdId;
-        private final EquitySymbol instrument;
+        private final Symbol instrument;
         private final Side side;
         private final OrderType ordTyp;
 
@@ -284,7 +284,7 @@ public class EQOrder implements Order {
     }
 
     public EQOrder copy() {
-        EQOrder eqOrder = new EQOrder(this.clOrdId, this.equitySymbol, this.side, this.orderType);
+        EQOrder eqOrder = new EQOrder(this.clOrdId, this.symbol, this.side, this.orderType);
         eqOrder.orderId = this.orderId;
         eqOrder.ordPx = this.ordPx;
         eqOrder.avgPx = this.avgPx;                 //Average Execution Price
@@ -307,7 +307,7 @@ public class EQOrder implements Order {
         EQOrder eqOrder = (EQOrder) o;
 
         if (!clOrdId.equals(eqOrder.clOrdId)) return false;
-        if (!equitySymbol.equals(eqOrder.equitySymbol)) return false;
+        if (!symbol.equals(eqOrder.symbol)) return false;
         return side == eqOrder.side;
 
     }
@@ -315,7 +315,7 @@ public class EQOrder implements Order {
     @Override
     public int hashCode() {
         int result = clOrdId.hashCode();
-        result = 31 * result + equitySymbol.hashCode();
+        result = 31 * result + symbol.hashCode();
         result = 31 * result + side.hashCode();
         return result;
     }
@@ -325,7 +325,7 @@ public class EQOrder implements Order {
         return "\nEQOrder{" +
                 " clOrdId='" + clOrdId + '\'' +
                 (orderId != Long.MIN_VALUE ? (", orderId=" + orderId) : ("")) +
-                ", equitySymbol=" + equitySymbol +
+                ", equitySymbol=" + symbol +
                 ", side=" + side +
                 ", orderType=" + orderType +
                 ", ordPx=" + ordPx +

@@ -1,6 +1,6 @@
 package com.sk.matching.exchange.crossing;
 
-import com.sk.matching.exchange.EquityOrderBook;
+import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.EQOrder;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.MEDateUtils;
@@ -20,14 +20,14 @@ public class CrossingProcessor {
 
     public void processOrder(EQOrder eqOrder) {
         try {
-            EquityOrderBook equityOrderBook = EquityOrderBook.getBook(eqOrder.getSymbol());
-            equityOrderBook.setOrder(eqOrder);
+            OrderBook orderBook = OrderBook.getBook(eqOrder.getSymbol());
+            orderBook.setOrder(eqOrder);
 
             Side side = eqOrder.getSide();
             String clOrdId = eqOrder.getClientOrderId();
             log.debug(()-> clOrdId +", side "+ side + " order received... will try to match with opposite side for best price.");
 
-            List<EQOrder> bestOppositeOrderList = equityOrderBook.getBestOppositeOrderList(side);
+            List<EQOrder> bestOppositeOrderList = orderBook.getBestOppositeOrderList(side);
 
             if ( bestOppositeOrderList.isEmpty() ) {
                 log.info( ()->"No Opposite Order Exists for side = " + side );
@@ -37,12 +37,12 @@ public class CrossingProcessor {
             while (eqOrder.getLeavesQty() > 0 && (!bestOppositeOrderList.isEmpty()) ) {
 
                 log.debug("Started Processing --- {}, {}" , eqOrder::getClientOrderId, eqOrder::getLeavesQty);
-                if (checkIfBestOppositeExists(eqOrder, equityOrderBook, side, bestOppositeOrderList)) break;
+                if (checkIfBestOppositeExists(eqOrder, orderBook, side, bestOppositeOrderList)) break;
 
                 List<EQOrder> finalList = bestOppositeOrderList;
                 log.debug( "--- clOrdId {}, Opposite Orders {}" , eqOrder::getClientOrderId, ()-> finalList);
 
-                bestOppositeOrderList = executeOrders(eqOrder, equityOrderBook, side, clOrdId, bestOppositeOrderList);
+                bestOppositeOrderList = executeOrders(eqOrder, orderBook, side, clOrdId, bestOppositeOrderList);
 
             }
 
@@ -52,7 +52,7 @@ public class CrossingProcessor {
 
     }
 
-    private List<EQOrder> executeOrders(EQOrder eqOrder, EquityOrderBook equityOrderBook, Side side, String clOrdId, List<EQOrder> bestOppositeOrderList) {
+    private List<EQOrder> executeOrders(EQOrder eqOrder, OrderBook orderBook, Side side, String clOrdId, List<EQOrder> bestOppositeOrderList) {
         ListIterator<EQOrder> listIterator = bestOppositeOrderList.listIterator();
         while (listIterator.hasNext()) { //Iterate based on receiving sequence
             EQOrder bestOppositeOrder = listIterator.next();
@@ -62,28 +62,28 @@ public class CrossingProcessor {
                 continue;
             }
 
-            matchingTransaction(eqOrder, equityOrderBook, side, clOrdId, listIterator, bestOppositeOrder);
+            matchingTransaction(eqOrder, orderBook, side, clOrdId, listIterator, bestOppositeOrder);
 
         }
         if (eqOrder.getLeavesQty() > 0 && bestOppositeOrderList.isEmpty()) {
             log.debug(()->"Check for the next best price opposite side of order " + eqOrder);
-            bestOppositeOrderList = equityOrderBook.getBestOppositeOrderList(side);
+            bestOppositeOrderList = orderBook.getBestOppositeOrderList(side);
             if( null == bestOppositeOrderList || bestOppositeOrderList.isEmpty()) return new ArrayList<>();
         }
         return bestOppositeOrderList;
     }
 
-    private boolean checkIfBestOppositeExists(EQOrder eqOrder, EquityOrderBook equityOrderBook,
+    private boolean checkIfBestOppositeExists(EQOrder eqOrder, OrderBook orderBook,
                                               Side side,
                                               List<EQOrder> bestOppositeOrderList) {
         if( eqOrder.getLeavesQty() <= 0 || eqOrder.isClosed() || bestOppositeOrderList.isEmpty() ) {
             return true;
         }
-        double bestOppositePrice = equityOrderBook.getBestOppositePrice(eqOrder, side);
+        double bestOppositePrice = orderBook.getBestOppositePrice(eqOrder, side);
         return (Double.isNaN(bestOppositePrice) ) ;
     }
 
-    private boolean matchingTransaction(EQOrder eqOrder, EquityOrderBook equityOrderBook,
+    private boolean matchingTransaction(EQOrder eqOrder, OrderBook orderBook,
                                         Side side, String clOrdId,
                                         ListIterator<EQOrder> listIterator,
                                         EQOrder bestOppositeOrder) {
@@ -113,12 +113,12 @@ public class CrossingProcessor {
 
             try {
                 log.debug("TRANSACTION STARTS on Symbol {} between {} and {}",
-                        equityOrderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
+                        orderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
                 //Generate aggressive trade
-                eqOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, bestOppositeOrder.getClientOrderId());
+                eqOrder.execute(orderBook.generateTradeId(), matchPx, matchQty, bestOppositeOrder.getClientOrderId());
 
                 //# Generate the passive executions
-                bestOppositeOrder.execute(equityOrderBook.generateTradeId(), matchPx, matchQty, eqOrder.getClientOrderId());
+                bestOppositeOrder.execute(orderBook.generateTradeId(), matchPx, matchQty, eqOrder.getClientOrderId());
 
                 long transactionTime = MEDateUtils.getCurrentNanos();
                 eqOrder.setExecutionTS(transactionTime);
@@ -134,18 +134,18 @@ public class CrossingProcessor {
                 }
 
                 if (eqOrder.getLeavesQty() == 0) {
-                    boolean isRemoved = equityOrderBook.removeOrder(eqOrder);
+                    boolean isRemoved = orderBook.removeOrder(eqOrder);
                     log.debug("Removed from matching book? {}, clOrdId={}, orderId={}",
                             isRemoved, eqOrder.getClientOrderId(), eqOrder.getOrderId());
                 } else if (eqOrder.getLeavesQty() < 0) {
                     log.warn("Order over executed [Check fill logic if happened ] eqOrder {}", eqOrder);
-                    boolean isRemoved = equityOrderBook.removeOrder(eqOrder);
+                    boolean isRemoved = orderBook.removeOrder(eqOrder);
                     log.debug(() -> "Overfilled but is Removed bestOppositeOrder " + isRemoved);
                 }
 
             } finally {
                 log.debug("TRANSACTION ENDS on Symbol {} between {} and {}",
-                        equityOrderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
+                        orderBook.getSymbol(), eqOrder.getClientOrderId(), bestOppositeOrder.getClientOrderId());
 
             }
         }
