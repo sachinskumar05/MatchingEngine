@@ -5,12 +5,12 @@ import com.sk.matching.pool.ObjectFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class EQOrderFactory implements ObjectFactory<EQOrder> {
-    EQOrderFactory() {}
+public class OrderFactory implements ObjectFactory<GenOrder> {
+    OrderFactory() {}
 
-    private static final EQOrderFactory INSTANCE = new EQOrderFactory();
+    private static final OrderFactory INSTANCE = new OrderFactory();
 
-    public static EQOrderFactory getInstance() {
+    public static OrderFactory getInstance() {
         return INSTANCE;
     }
 
@@ -19,23 +19,23 @@ public class EQOrderFactory implements ObjectFactory<EQOrder> {
         throw new CloneNotSupportedException("EQOrderFactory is not cloneable");
     }
 
-    public EQOrder createOrder(EQOrder.Builder builder) throws OrderCreationException {
+    public GenOrder createOrder(GenOrder.Builder builder) throws OrderCreationException {
         return builder.build();
     }
 
     @Override
-    public EQOrder create() {
+    public GenOrder create() {
         log.warn("EQOrder object pooling is not yet supported, work is in progress");
         return null;
     }
 
     @Override
-    public void destroy(EQOrder eqOrder) {
+    public void destroy(GenOrder genOrder) {
 
     }
 
     @Override
-    public boolean validate(EQOrder eqOrder) {
+    public boolean validate(GenOrder genOrder) {
         return false;
     }
 

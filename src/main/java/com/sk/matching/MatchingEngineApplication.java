@@ -1,7 +1,7 @@
 package com.sk.matching;
 
 import com.sk.matching.client.ClientWorker;
-import com.sk.matching.engine.EquityMatchingEngine;
+import com.sk.matching.engine.BasicMatchingEngine;
 import com.sk.matching.exception.SymbolNotSupportedException;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.EquitySymbolCache;
@@ -25,7 +25,7 @@ public class MatchingEngineApplication {
 		log.info("Application starting");
 		SpringApplication.run(MatchingEngineApplication.class, args);
 
-		EquityMatchingEngine equityMatchingEngine = EquityMatchingEngine.getInstance();
+		BasicMatchingEngine basicMatchingEngine = BasicMatchingEngine.getInstance();
 
 		ClientWorker clientA = new ClientWorker();
 		ClientWorker clientB = new ClientWorker();
@@ -57,14 +57,14 @@ public class MatchingEngineApplication {
 		}
 
 		METhreadPoolUtils.pause(1000);
-		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
+		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
 
 		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.25, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 100, OrderType.LIMIT));
 		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
 		METhreadPoolUtils.pause(1000);
-		log.info( "Order {}" ,  equityMatchingEngine.getOrderBook(symbolBAC));
+		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
 
 		Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 

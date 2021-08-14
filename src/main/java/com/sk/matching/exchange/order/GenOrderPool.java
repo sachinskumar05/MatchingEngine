@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 @Component
-public class EQOrderPool {
+public class GenOrderPool {
 
     @Autowired
     private PoolCfg poolCfg;
 
 
-    private ObjectPool<EQOrder> pool = null;
+    private ObjectPool<GenOrder> pool = null;
 
     @PostConstruct
     public void init(){
 
-        EQOrderFactory orderFactory = new EQOrderFactory();
+        OrderFactory orderFactory = new OrderFactory();
 
         pool = new ObjectPool<>(poolCfg, orderFactory);
     }

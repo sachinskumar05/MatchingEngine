@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 @Log4j2
-public class EQOrder implements Order {
+public class GenOrder implements Order {
 
     // Order is serializable for persistence / network (not featured as of today)
 
@@ -59,7 +59,7 @@ public class EQOrder implements Order {
 
     private AtomicBoolean isOpen = new AtomicBoolean(true);
 
-    private EQOrder(String clOrdId, Symbol symbol, Side side, OrderType orderType) {
+    private GenOrder(String clOrdId, Symbol symbol, Side side, OrderType orderType) {
         this.clOrdId = clOrdId;
         this.symbol = symbol;
         this.side = side;
@@ -264,51 +264,51 @@ public class EQOrder implements Order {
             return this;
         }
 
-        public EQOrder build() throws OrderCreationException {
-            EQOrder eqOrder = new EQOrder(this.clOrdId, this.instrument, this.side, this.ordTyp);
+        public GenOrder build() throws OrderCreationException {
+            GenOrder genOrder = new GenOrder(this.clOrdId, this.instrument, this.side, this.ordTyp);
             if (this.ordTyp == OrderType.LIMIT) {
                 if(Double.isNaN(this.price)) {
                     throw new OrderCreationException("Limit order must have some price");
                 }
-                eqOrder.ordPx = this.price;
+                genOrder.ordPx = this.price;
             }
             if(this.qty <= 0.0d) {
                 throw new OrderCreationException("Invalid order Quantity " + qty + " for clOrdId = " + clOrdId );
             }
-            eqOrder.leavesQty = this.qty;
-            eqOrder.ordQty = this.qty;
-            eqOrder.currency = this.currency;
-            return eqOrder;
+            genOrder.leavesQty = this.qty;
+            genOrder.ordQty = this.qty;
+            genOrder.currency = this.currency;
+            return genOrder;
         }
 
     }
 
-    public EQOrder copy() {
-        EQOrder eqOrder = new EQOrder(this.clOrdId, this.symbol, this.side, this.orderType);
-        eqOrder.orderId = this.orderId;
-        eqOrder.ordPx = this.ordPx;
-        eqOrder.avgPx = this.avgPx;                 //Average Execution Price
-        eqOrder.lastPrice = this.lastPrice;         //Last Executed Price
-        eqOrder.ordQty = this.ordQty;               //Order Qty
-        eqOrder.cumQty = this.cumQty;               // Cumulative executed Qty
-        eqOrder.leavesQty = this.leavesQty;         //Remaining Qty
-        eqOrder.lastQty = this.lastQty;             //Last Executed Qty
-        eqOrder.currency = this.currency;
-        eqOrder.tradeMap.putAll(this.tradeMap);     //Trade is immutable class
-        eqOrder.isOpen.set(this.isOpen.get());
-        return eqOrder;
+    public GenOrder copy() {
+        GenOrder genOrder = new GenOrder(this.clOrdId, this.symbol, this.side, this.orderType);
+        genOrder.orderId = this.orderId;
+        genOrder.ordPx = this.ordPx;
+        genOrder.avgPx = this.avgPx;                 //Average Execution Price
+        genOrder.lastPrice = this.lastPrice;         //Last Executed Price
+        genOrder.ordQty = this.ordQty;               //Order Qty
+        genOrder.cumQty = this.cumQty;               // Cumulative executed Qty
+        genOrder.leavesQty = this.leavesQty;         //Remaining Qty
+        genOrder.lastQty = this.lastQty;             //Last Executed Qty
+        genOrder.currency = this.currency;
+        genOrder.tradeMap.putAll(this.tradeMap);     //Trade is immutable class
+        genOrder.isOpen.set(this.isOpen.get());
+        return genOrder;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EQOrder)) return false;
+        if (!(o instanceof GenOrder)) return false;
 
-        EQOrder eqOrder = (EQOrder) o;
+        GenOrder genOrder = (GenOrder) o;
 
-        if (!clOrdId.equals(eqOrder.clOrdId)) return false;
-        if (!symbol.equals(eqOrder.symbol)) return false;
-        return side == eqOrder.side;
+        if (!clOrdId.equals(genOrder.clOrdId)) return false;
+        if (!symbol.equals(genOrder.symbol)) return false;
+        return side == genOrder.side;
 
     }
 

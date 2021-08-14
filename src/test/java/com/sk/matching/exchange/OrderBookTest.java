@@ -2,7 +2,7 @@ package com.sk.matching.exchange;
 
 import com.sk.matching.config.AppCfg;
 import com.sk.matching.exchange.crossing.CrossingProcessor;
-import com.sk.matching.exchange.order.EQOrder;
+import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.EquitySymbolCache;
@@ -44,11 +44,11 @@ class OrderBookTest {
     @Mock
     Symbol symbol;
     @Mock
-    SortedMap<Double, List<EQOrder>> fxBidOrderSortedMap;
+    SortedMap<Double, List<GenOrder>> fxBidOrderSortedMap;
     @Mock
-    SortedMap<Double, List<EQOrder>> fxAskOrderSortedMap;
+    SortedMap<Double, List<GenOrder>> fxAskOrderSortedMap;
     @Mock
-    Map<Long, EQOrder> orderHistory;
+    Map<Long, GenOrder> orderHistory;
     @Mock
     AppCfg appCfg;
     @InjectMocks
@@ -87,8 +87,8 @@ class OrderBookTest {
 
     @Test
     void testGetBestOppositeOrderList() {
-        List<EQOrder> result = orderBook.getBestOppositeOrderList(Side.BUY);
-        Assertions.assertEquals(Arrays.<EQOrder>asList(null), result);
+        List<GenOrder> result = orderBook.getBestOppositeOrderList(Side.BUY);
+        Assertions.assertEquals(Arrays.<GenOrder>asList(null), result);
     }
 
     @Test
@@ -99,8 +99,8 @@ class OrderBookTest {
 
     @Test
     void testGetBestBid() {
-        List<EQOrder> result = orderBook.getBestBid();
-        Assertions.assertEquals(Arrays.<EQOrder>asList(null), result);
+        List<GenOrder> result = orderBook.getBestBid();
+        Assertions.assertEquals(Arrays.<GenOrder>asList(null), result);
     }
 
     @Test
@@ -117,8 +117,8 @@ class OrderBookTest {
 
     @Test
     void testGetBestAsk() {
-        List<EQOrder> result = orderBook.getBestAsk();
-        Assertions.assertEquals(Arrays.<EQOrder>asList(null), result);
+        List<GenOrder> result = orderBook.getBestAsk();
+        Assertions.assertEquals(Arrays.<GenOrder>asList(null), result);
     }
 
     @Test
@@ -146,13 +146,13 @@ class OrderBookTest {
 
     @Test
     void testGetOrderHistory() {
-        Collection<EQOrder> result = orderBook.getOrderHistory();
-        Assertions.assertEquals(Arrays.<EQOrder>asList(null), result);
+        Collection<GenOrder> result = orderBook.getOrderHistory();
+        Assertions.assertEquals(Arrays.<GenOrder>asList(null), result);
     }
 
     @Test
     void testGetOrder() {
-        EQOrder result = orderBook.getOrder(Long.valueOf(1));
+        GenOrder result = orderBook.getOrder(Long.valueOf(1));
         Assertions.assertNull(result);
 
         result = orderBook.getOrder(Long.valueOf(1));

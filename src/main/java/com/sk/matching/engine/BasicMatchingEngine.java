@@ -1,8 +1,8 @@
 package com.sk.matching.engine;
 
 import com.sk.matching.exception.OrderCreationException;
+import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.orderbook.OrderBook;
-import com.sk.matching.exchange.order.EQOrder;
 import com.sk.matching.exchange.order.Order;
 import com.sk.matching.exchange.order.Trade;
 import com.sk.matching.symbols.Symbol;
@@ -21,20 +21,20 @@ import static com.sk.matching.types.Side.BUY;
 import static com.sk.matching.types.Side.SELL;
 
 @Log4j2
-public class EquityMatchingEngine implements MatchingEngine {
+public class BasicMatchingEngine implements MatchingEngine {
 
     private static final AtomicLong atomicOrderId = new AtomicLong();
 
     private static final ExecutorService executorForMatching = Executors.newFixedThreadPool(20 );
 
-    private EquityMatchingEngine() {
+    private BasicMatchingEngine() {
          for(Symbol symbol : EquitySymbolCache.getAllSymbols() ) {
             OrderBook.getBook(symbol);//Pre initialization
         }
     }
 
-    private static final EquityMatchingEngine INSTANCE = new EquityMatchingEngine();
-    public static EquityMatchingEngine getInstance() {
+    private static final BasicMatchingEngine INSTANCE = new BasicMatchingEngine();
+    public static BasicMatchingEngine getInstance() {
         return INSTANCE;
     }
 
@@ -55,41 +55,38 @@ public class EquityMatchingEngine implements MatchingEngine {
 
     @Override
     public List<Trade> getTrades(Symbol symbol) {
+
         List<Trade> tradeList = new ArrayList<>();
-        OrderBook ordBook = null;
-        if (symbol instanceof Symbol) {
-            ordBook = OrderBook.getBook((Symbol) symbol);
-            ordBook.getOrderHistory();
-        } else {
-            log.error("Equity Matching Engine is expecting only Equity Symbol");
-        }
+        OrderBook ordBook = OrderBook.getBook(symbol);
+        ordBook.getOrderHistory();
+
         return tradeList;
     }
 
     @Override
     public void addOrder(Order order) throws OrderCreationException {
-        EQOrder eqOrder = (EQOrder) order;
+        GenOrder genOrder = (GenOrder) order;
 
-        if(eqOrder.getSide() != BUY && eqOrder.getSide() != SELL) {
+        if(genOrder.getSide() != BUY && genOrder.getSide() != SELL) {
             log.error("Invalid SIDE {} for clOrdId {} ",
-                    eqOrder::getSide, eqOrder::getClientOrderId);
+                    genOrder::getSide, genOrder::getClientOrderId);
             return ;
         }
-        if(eqOrder.getOrderType() != LIMIT && eqOrder.getOrderType() != MARKET) {
+        if(genOrder.getOrderType() != LIMIT && genOrder.getOrderType() != MARKET) {
             log.error("Invalid ORDER TYPE {} for clOrdId {} ",
-                    eqOrder::getOrderType, eqOrder::getClientOrderId);
+                    genOrder::getOrderType, genOrder::getClientOrderId);
             return ;
         }
         //Locate the order book
-        OrderBook orderBook = (OrderBook) getOrderBook(eqOrder.getSymbol());
+        OrderBook orderBook = getOrderBook(genOrder.getSymbol());
         if(null == orderBook ) {
-            throw new OrderCreationException("Unknown security/security received symbol in order " + eqOrder.getSymbol());
+            throw new OrderCreationException("Unknown security/security received symbol in order " + genOrder.getSymbol());
         }
-        eqOrder.setOrderId(atomicOrderId.incrementAndGet());
+        genOrder.setOrderId(atomicOrderId.incrementAndGet());
         log.info("Received to add clOrdId {}, side {}, price {}, qty {}, order id {} ",
-                eqOrder::getClientOrderId, eqOrder::getSide, eqOrder::getOrdPx, eqOrder::getOrdQty, eqOrder::getOrderId);
+                genOrder::getClientOrderId, genOrder::getSide, genOrder::getOrdPx, genOrder::getOrdQty, genOrder::getOrderId);
 
-        executorForMatching.submit( ()-> orderBook.processOrder(eqOrder));//Submitted for possible execution
+        executorForMatching.submit( ()-> orderBook.processOrder(genOrder));//Submitted for possible execution
 
     }
 

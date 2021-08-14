@@ -4,13 +4,22 @@ import com.sk.matching.exchange.order.GenOrder;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * The order book output should be formatted to a fixed width using the following template:
+ * Buyers               Sellers
+ * 000,000,000 000000 | 000000 000,000,000
+ * Please note
+ */
 @Log4j2
-public class OrderBookDisplayMatchOrder implements OrderBookDisplay {
+public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
 
-    private static final OrderBookDisplayMatchOrder DISPLAY_MATCH_ORDER = new OrderBookDisplayMatchOrder();
-    public static OrderBookDisplayMatchOrder getInstance() {
+    private static final OrderBookDisplayFixedWidth DISPLAY_MATCH_ORDER = new OrderBookDisplayFixedWidth();
+    public static OrderBookDisplayFixedWidth getInstance() {
         return DISPLAY_MATCH_ORDER;
     }
     @Override
@@ -23,15 +32,16 @@ public class OrderBookDisplayMatchOrder implements OrderBookDisplay {
 
     @Override
     public String printFormat(OrderBook orderBook) {
-        final StringBuilder sb = new StringBuilder("\n=================== ORDER BOOK ===================\n");
-        sb.append("\nequitySymbol=").append(orderBook.getSymbol())
-                .append("-hashCode=").append(orderBook.getSymbol().hashCode())
-                .append("\n")
-                .append("ID\tSide\tTime\t\t\tQty\t\tPrice\tQty\t\tTime\t\t\t\tSide")
-                .append(formatAsk(orderBook))
-                .append(formatBid(orderBook))
-                .append("\n")
-                .append("\n=================== END of ORDER BOOK ===================");
+        final StringBuilder sb = new StringBuilder(
+                String.format("\n=================== ORDER BOOK of %s ===================\n", orderBook.getSymbol())
+        );
+        sb.append("\n")
+        .append("\t\tBids (buying)\t\t\t\t\t\tAsks (selling)\t\t\t")
+        .append("Volume\t\tPrice\t\t\tPrice\t\t\tVolume")
+        .append(formatAsk(orderBook))
+        .append(formatBid(orderBook))
+        .append("\n")
+        .append("\n=================== END of ORDER BOOK ===================");
         return sb.toString();
 
     }

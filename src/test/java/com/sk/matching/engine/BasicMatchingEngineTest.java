@@ -4,7 +4,7 @@ import com.sk.matching.config.AppCfg;
 import com.sk.matching.exception.OrderCreationException;
 import com.sk.matching.exception.SymbolNotSupportedException;
 import com.sk.matching.exchange.orderbook.OrderBook;
-import com.sk.matching.exchange.order.EQOrder;
+import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.order.Trade;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.EquitySymbolCache;
@@ -22,13 +22,13 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 
 @Log4j2
-class EquityMatchingEngineTest {
+class BasicMatchingEngineTest {
 
     @Mock
     AppCfg appCfg;
 
     @InjectMocks
-    EquityMatchingEngine equityMatchingEngine;
+    BasicMatchingEngine basicMatchingEngine;
 
     EquitySymbolCache equitySymbolCache ;
     private static final String BAC = "BAC";
@@ -52,20 +52,20 @@ class EquityMatchingEngineTest {
 
     @Test
     void testClone() {
-        Assertions.assertThrows(CloneNotSupportedException.class, ()-> equityMatchingEngine.clone()) ;
+        Assertions.assertThrows(CloneNotSupportedException.class, ()-> basicMatchingEngine.clone()) ;
     }
 
     @Test
     void testGetOrderBook() {
         Symbol symbol = new Symbol("name", Double.valueOf(0));
-        OrderBook result = equityMatchingEngine.getOrderBook(symbol);
+        OrderBook result = basicMatchingEngine.getOrderBook(symbol);
         log.info(" Order book result {}" , result);
         Assertions.assertNotNull(result);
     }
 
     @Test
     void testGetNoTrades() {
-        List<Trade> result = equityMatchingEngine.getTrades(new Symbol("name", Double.valueOf(0)));
+        List<Trade> result = basicMatchingEngine.getTrades(new Symbol("name", Double.valueOf(0)));
         Assertions.assertTrue(result.isEmpty());
     }
 
@@ -74,15 +74,15 @@ class EquityMatchingEngineTest {
 
         try {
 
-            EQOrder.Builder eqOrderBuy = new EQOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
+            GenOrder.Builder eqOrderBuy = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
             eqOrderBuy.price=30.00;
             eqOrderBuy.qty=100;
-            equityMatchingEngine.addOrder(eqOrderBuy.build());
-            EQOrder.Builder eqOrderSell = new EQOrder.Builder("CLOrdId2", BAC, Side.SELL, OrderType.LIMIT);
+            basicMatchingEngine.addOrder(eqOrderBuy.build());
+            GenOrder.Builder eqOrderSell = new GenOrder.Builder("CLOrdId2", BAC, Side.SELL, OrderType.LIMIT);
             eqOrderSell.price=30.00;
             eqOrderSell.qty=100;
-            equityMatchingEngine.addOrder(eqOrderSell.build());
-            List<Trade> result = equityMatchingEngine.getTrades(new Symbol("name", Double.valueOf(0)));
+            basicMatchingEngine.addOrder(eqOrderSell.build());
+            List<Trade> result = basicMatchingEngine.getTrades(new Symbol("name", Double.valueOf(0)));
             Assertions.assertTrue(result.isEmpty());
         } catch (SymbolNotSupportedException | OrderCreationException e) {
             e.printStackTrace();
@@ -91,14 +91,14 @@ class EquityMatchingEngineTest {
 
     @Test
     void testAddOrder() {
-        Assertions.assertThrows(NullPointerException.class, ()->equityMatchingEngine.addOrder(null));
+        Assertions.assertThrows(NullPointerException.class, ()-> basicMatchingEngine.addOrder(null));
         Assertions.assertThrows(SymbolNotSupportedException.class,
-                ()-> new EQOrder.Builder("CLOrdId1",  "FAKE", Side.BUY, OrderType.LIMIT));
+                ()-> new GenOrder.Builder("CLOrdId1",  "FAKE", Side.BUY, OrderType.LIMIT));
         try {
-            EQOrder.Builder eqOrder = new EQOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
+            GenOrder.Builder eqOrder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
             eqOrder.price = 30.00;
             eqOrder.qty=100;
-            equityMatchingEngine.addOrder(eqOrder.build());
+            basicMatchingEngine.addOrder(eqOrder.build());
         } catch (SymbolNotSupportedException | OrderCreationException e) {
             e.printStackTrace();
         }
@@ -107,8 +107,8 @@ class EquityMatchingEngineTest {
     @Test
     void testAddLimitOrderWithoutPrice() {
         try {
-            EQOrder.Builder eqOrder = new EQOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
-            Assertions.assertThrows(OrderCreationException.class, ()->equityMatchingEngine.addOrder(eqOrder.build()));
+            GenOrder.Builder eqOrder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
+            Assertions.assertThrows(OrderCreationException.class, ()-> basicMatchingEngine.addOrder(eqOrder.build()));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed Test case ", e);
         }
@@ -117,11 +117,11 @@ class EquityMatchingEngineTest {
     @Test
     void testAddLimitOrderWithoutQty() {
         try {
-            EQOrder.Builder eqOrder = new EQOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
+            GenOrder.Builder eqOrder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
             eqOrder.price= 30.00;
-            Assertions.assertThrows(OrderCreationException.class, ()->equityMatchingEngine.addOrder(eqOrder.build()));
+            Assertions.assertThrows(OrderCreationException.class, ()-> basicMatchingEngine.addOrder(eqOrder.build()));
             eqOrder.qty = 100;
-            Assertions.assertDoesNotThrow(()->equityMatchingEngine.addOrder(eqOrder.build()));
+            Assertions.assertDoesNotThrow(()-> basicMatchingEngine.addOrder(eqOrder.build()));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed Test case ", e);
         }
@@ -129,12 +129,12 @@ class EquityMatchingEngineTest {
 
     @Test
     void testCancelOrder() {
-        Assertions.assertThrows(UnsupportedOperationException.class, ()-> equityMatchingEngine.cancelOrder(null));
+        Assertions.assertThrows(UnsupportedOperationException.class, ()-> basicMatchingEngine.cancelOrder(null));
     }
 
     @Test
     void testAmendOrder() {
-        Assertions.assertThrows(UnsupportedOperationException.class, ()-> equityMatchingEngine.amendOrder(null) );
+        Assertions.assertThrows(UnsupportedOperationException.class, ()-> basicMatchingEngine.amendOrder(null) );
     }
 }
 

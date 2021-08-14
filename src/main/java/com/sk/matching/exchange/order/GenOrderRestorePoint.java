@@ -3,19 +3,19 @@ package com.sk.matching.exchange.order;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class EQOrderRestorePoint {
+public class GenOrderRestorePoint {
     public double lastPrice = Double.NaN;
     public double lastQty = Double.NaN;
     public double cumQty = Double.NaN;
     public double leavesQty = Double.NaN;
     public double avgPx = Double.NaN;
 
-    public EQOrderRestorePoint(EQOrder EQOrder) {
-        this( EQOrder.getLastPrice(), EQOrder.getLastQty(), EQOrder.getCumQty(),
-                EQOrder.getLeavesQty(), EQOrder.getAvgPx());
+    public GenOrderRestorePoint(GenOrder GenOrder) {
+        this( GenOrder.getLastPrice(), GenOrder.getLastQty(), GenOrder.getCumQty(),
+                GenOrder.getLeavesQty(), GenOrder.getAvgPx());
     }
 
-    private EQOrderRestorePoint(double lastPx, double lastQty, double cumQty, double avgPx, double leavesQty ) {
+    private GenOrderRestorePoint(double lastPx, double lastQty, double cumQty, double avgPx, double leavesQty ) {
         this.lastPrice = lastPx;
         this.lastQty = lastQty;
         this.cumQty = cumQty;
