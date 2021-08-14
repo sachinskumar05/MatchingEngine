@@ -25,7 +25,7 @@ import static com.sk.matching.types.Side.SELL;
 @Log4j2
 public class OrderBook implements Serializable {
 
-    private final OrderBookDisplay orderBookDisplay = OrderBookDisplayMatchOrder.getInstance();
+    private final OrderBookDisplay orderBookDisplay = OrderBookDisplayFixedWidth.getInstance();
 
     private static final Map<Symbol, OrderBook> orderBookCache = new ConcurrentHashMap<>();
 

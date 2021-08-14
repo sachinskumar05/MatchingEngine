@@ -4,7 +4,7 @@ import com.sk.matching.types.ExecType;
 import com.sk.matching.types.OrderType;
 import lombok.Data;
 
-public class EQExecutionReport implements ExectionReport {
+public class GenExecutionReport implements ExectionReport {
     private final String execId ;
     private final String orderId ;
     private final ExecType execType;
@@ -25,7 +25,7 @@ public class EQExecutionReport implements ExectionReport {
 
     }
 
-    public EQExecutionReport(String execId, String orderId, ExecType execType, OrderType ordTyp, double execQty, double execPrice){
+    public GenExecutionReport(String execId, String orderId, ExecType execType, OrderType ordTyp, double execQty, double execPrice){
 
           this.execId = execId;
           this.orderId = orderId;
