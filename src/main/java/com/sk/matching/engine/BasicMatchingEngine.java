@@ -6,7 +6,7 @@ import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.Order;
 import com.sk.matching.exchange.order.Trade;
 import com.sk.matching.symbols.Symbol;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class BasicMatchingEngine implements MatchingEngine {
     private static final ExecutorService executorForMatching = Executors.newFixedThreadPool(20 );
 
     private BasicMatchingEngine() {
-         for(Symbol symbol : EquitySymbolCache.getAllSymbols() ) {
+         for(Symbol symbol : SymbolCache.getAllSymbols() ) {
             OrderBook.getBook(symbol);//Pre initialization
         }
     }

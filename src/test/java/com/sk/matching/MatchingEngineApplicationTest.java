@@ -4,7 +4,7 @@ import com.sk.matching.client.ClientWorker;
 import com.sk.matching.config.AppCfg;
 import com.sk.matching.engine.BasicMatchingEngine;
 import com.sk.matching.exception.SymbolNotSupportedException;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
@@ -33,7 +33,7 @@ class MatchingEngineApplicationTest {
 
     private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    private EquitySymbolCache equitySymbolCache;
+    private SymbolCache symbolCache;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -42,8 +42,8 @@ class MatchingEngineApplicationTest {
         Mockito.lenient().when(appCfg.getSymbolFileContentSeparator()).thenReturn(",");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("B");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("S");
-        equitySymbolCache = new EquitySymbolCache(appCfg);
-        equitySymbolCache.init();
+        symbolCache = new SymbolCache(appCfg);
+        symbolCache.init();
     }
 
     @Test
@@ -72,7 +72,7 @@ class MatchingEngineApplicationTest {
         Symbol symbolBAC = null;
 
         try {
-            symbolBAC = EquitySymbolCache.get(BAC);
+            symbolBAC = SymbolCache.get(BAC);
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to create order for {}", BAC, e );
         }

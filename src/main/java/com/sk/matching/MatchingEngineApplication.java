@@ -4,7 +4,7 @@ import com.sk.matching.client.ClientWorker;
 import com.sk.matching.engine.BasicMatchingEngine;
 import com.sk.matching.exception.SymbolNotSupportedException;
 import com.sk.matching.symbols.Symbol;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
@@ -50,7 +50,7 @@ public class MatchingEngineApplication {
 		Symbol symbolBAC = null;
 
 		try {
-			symbolBAC = EquitySymbolCache.get(BAC);
+			symbolBAC = SymbolCache.get(BAC);
 		} catch (SymbolNotSupportedException e) {
 			log.error("Failed to create order for {}", BAC, e );
 		}

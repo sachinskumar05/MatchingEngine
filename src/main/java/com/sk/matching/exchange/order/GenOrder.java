@@ -3,7 +3,7 @@ package com.sk.matching.exchange.order;
 import com.sk.matching.exception.OrderCreationException;
 import com.sk.matching.exception.SymbolNotSupportedException;
 import com.sk.matching.symbols.Symbol;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import lombok.Getter;
@@ -242,7 +242,7 @@ public class GenOrder implements Order {
 
         public Builder(String clOrdId, String symbolStr, Side side, OrderType ordTyp) throws SymbolNotSupportedException {
             this.clOrdId  = clOrdId;
-            this.instrument = EquitySymbolCache.get(symbolStr);
+            this.instrument = SymbolCache.get(symbolStr);
             this.side = side;
             this.ordTyp = ordTyp;
         }

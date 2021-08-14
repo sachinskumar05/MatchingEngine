@@ -7,7 +7,7 @@ import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.order.Trade;
 import com.sk.matching.symbols.Symbol;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import lombok.extern.log4j.Log4j2;
@@ -30,7 +30,7 @@ class BasicMatchingEngineTest {
     @InjectMocks
     BasicMatchingEngine basicMatchingEngine;
 
-    EquitySymbolCache equitySymbolCache ;
+    SymbolCache symbolCache;
     private static final String BAC = "BAC";
 
     @BeforeEach
@@ -46,8 +46,8 @@ class BasicMatchingEngineTest {
         Mockito.lenient().when(appCfg.getSymbolFileContentSeparator()).thenReturn(",");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("B");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("S");
-        equitySymbolCache = new EquitySymbolCache(appCfg);
-        equitySymbolCache.init();
+        symbolCache = new SymbolCache(appCfg);
+        symbolCache.init();
     }
 
     @Test

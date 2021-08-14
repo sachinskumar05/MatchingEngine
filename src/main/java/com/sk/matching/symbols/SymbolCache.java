@@ -21,13 +21,13 @@ import java.util.stream.Stream;
 
 @Component
 @Log4j2
-public class EquitySymbolCache {
+public class SymbolCache {
 
     @Autowired
     private AppCfg appCfg;
 
-    public EquitySymbolCache(){}
-    public EquitySymbolCache(AppCfg appCfg) {
+    public SymbolCache(){}
+    public SymbolCache(AppCfg appCfg) {
         this.appCfg = appCfg;
     }
 

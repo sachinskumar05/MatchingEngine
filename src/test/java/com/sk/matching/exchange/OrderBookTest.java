@@ -5,7 +5,7 @@ import com.sk.matching.exception.OrderCreationException;
 import com.sk.matching.exception.SymbolNotSupportedException;
 import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.orderbook.OrderBook;
-import com.sk.matching.symbols.EquitySymbolCache;
+import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import lombok.extern.log4j.Log4j2;
@@ -53,7 +53,7 @@ class OrderBookTest {
 
     }
 
-    private EquitySymbolCache equitySymbolCache;
+    private SymbolCache symbolCache;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -62,10 +62,10 @@ class OrderBookTest {
         Mockito.lenient().when(appCfg.getSymbolFileContentSeparator()).thenReturn(",");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("B");
         Mockito.lenient().when(appCfg.getOrderPrefixBuy()).thenReturn("S");
-        equitySymbolCache = new EquitySymbolCache(appCfg);
-        equitySymbolCache.init();
+        symbolCache = new SymbolCache(appCfg);
+        symbolCache.init();
         try {
-            orderBook = OrderBook.getBook(EquitySymbolCache.get(symbolStr));
+            orderBook = OrderBook.getBook(SymbolCache.get(symbolStr));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed test case as symbol not found {}", symbolStr, e);
         }
@@ -74,7 +74,7 @@ class OrderBookTest {
     @AfterEach
     void tearDown() {
         try {
-            orderBook = OrderBook.getBook(EquitySymbolCache.get(symbolStr));
+            orderBook = OrderBook.getBook(SymbolCache.get(symbolStr));
             orderBook.removeOrder(buyOrder);
             orderBook.removeOrder(sellOrder);
         } catch (SymbolNotSupportedException e) {
@@ -86,7 +86,7 @@ class OrderBookTest {
     void testGetBook() {
         OrderBook result = null;
         try {
-            result = OrderBook.getBook(EquitySymbolCache.get(symbolStr));
+            result = OrderBook.getBook(SymbolCache.get(symbolStr));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to execute test case ", e);
         }
