@@ -9,6 +9,7 @@ import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
+import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,11 +115,10 @@ class BitMexTestWithMatch {
             log.error("Failed to create order for {}", BAC, e );
         }
 
-//		ThreadUtils.pause(500);
+		ThreadUtils.pause(500);
         log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
         Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 
     }
 }
 
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

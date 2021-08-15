@@ -96,12 +96,17 @@ class BitmexTestWithIceBerg {
             Side side = Side.valueOf(attributes[1].charAt(0));
             Double px = Double.valueOf(attributes[2]);
             Double qty = Double.valueOf(attributes[3]);
+            Double visibleQty = Double.NaN;
+            if ( attributes.length > 4) {
+                visibleQty = Double.valueOf(attributes[4]);
+            }
+            Double finalVisibleQty = visibleQty;
             executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
                     side,
                     px,
                     qty,
                     OrderType.LIMIT,
-                    clOrdId));
+                    clOrdId, finalVisibleQty));
         }
 
         Symbol symbol = null;
@@ -120,4 +125,3 @@ class BitmexTestWithIceBerg {
     }
 }
 
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

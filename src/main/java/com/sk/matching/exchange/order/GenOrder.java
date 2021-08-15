@@ -191,12 +191,7 @@ public class GenOrder implements Order {
     }
 
     public double getVisibleQty() {
-        if( Double.NaN == visibleQty )
-            return ordQty;
-        else {
-            return visibleQty;
-        }
-
+        return visibleQty;
     }
     public double getCumQty() {
         return cumQty;
@@ -245,8 +240,8 @@ public class GenOrder implements Order {
 
         public String currency;
         public double price = Double.NaN;
-        public double qty;
-        public double visibleQty;
+        public double qty = Double.NaN;
+        public double visibleQty = Double.NaN;
         public double cumQty;
         public double leavesQty;
 
@@ -285,6 +280,7 @@ public class GenOrder implements Order {
             if(this.qty <= 0.0d) {
                 throw new OrderCreationException("Invalid order Quantity " + qty + " for clOrdId = " + clOrdId );
             }
+            genOrder.visibleQty = this.visibleQty;
             genOrder.leavesQty = this.qty;
             genOrder.ordQty = this.qty;
             genOrder.currency = this.currency;

@@ -100,10 +100,10 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
     }
 
     public double displayVol(GenOrder order) {
-        if( Double.NaN != order.getVisibleQty() ) {
-            return order.getVisibleQty();
-        } else {
+        if( Double.isNaN(order.getVisibleQty()) ) {
             return order.getLeavesQty();
+        } else {
+            return Math.min(order.getVisibleQty(), order.getLeavesQty());
         }
     }
 

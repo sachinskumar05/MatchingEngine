@@ -77,14 +77,14 @@ class MatchingEngineApplicationTest {
             log.error("Failed to create order for {}", BAC, e );
         }
 
-        ThreadUtils.pause(1000);
+        ThreadUtils.pause(100);
         log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
 
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.25, 100, OrderType.LIMIT));
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 100, OrderType.LIMIT));
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
-        ThreadUtils.pause(1000);
+        ThreadUtils.pause(200);
         log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
 
         Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
@@ -92,4 +92,3 @@ class MatchingEngineApplicationTest {
     }
 }
 
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

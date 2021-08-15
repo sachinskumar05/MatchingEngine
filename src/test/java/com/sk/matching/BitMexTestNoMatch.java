@@ -113,7 +113,7 @@ class BitMexTestNoMatch {
             log.error("Failed to create order for {}", BAC, e );
         }
 
-//        ThreadUtils.pause(500);
+        ThreadUtils.pause(500);
         log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
 
         Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
