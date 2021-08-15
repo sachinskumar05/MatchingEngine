@@ -3,7 +3,7 @@ package com.sk.matching.exchange.crossing;
 import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.types.Side;
-import com.sk.matching.util.MEDateUtils;
+import com.sk.matching.util.DateUtils;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -120,7 +120,7 @@ public class CrossingProcessor {
                 //# Generate the passive executions
                 bestOppositeOrder.execute(orderBook.generateTradeId(), matchPx, matchQty, genOrder.getClientOrderId());
 
-                long transactionTime = MEDateUtils.getCurrentNanos();
+                long transactionTime = DateUtils.getCurrentNanos();
                 genOrder.setExecutionTS(transactionTime);
                 bestOppositeOrder.setExecutionTS(transactionTime);
 

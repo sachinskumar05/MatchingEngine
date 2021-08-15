@@ -4,7 +4,7 @@ import com.sk.matching.exchange.crossing.CrossingProcessor;
 import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.types.Side;
-import com.sk.matching.util.MEDateUtils;
+import com.sk.matching.util.DateUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,7 +25,7 @@ import static com.sk.matching.types.Side.SELL;
 @Log4j2
 public class OrderBook implements Serializable {
 
-    private final OrderBookDisplay orderBookDisplay = OrderBookDisplayFixedWidth.getInstance();
+    private final transient OrderBookDisplay orderBookDisplay = OrderBookDisplayFixedWidth.getInstance();
 
     private static final Map<Symbol, OrderBook> orderBookCache = new ConcurrentHashMap<>();
 
@@ -44,6 +44,7 @@ public class OrderBook implements Serializable {
 
     private final transient ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final transient Lock writeLock = readWriteLock.writeLock();
+    public  final transient Lock readLock = readWriteLock.writeLock();
 
 
     private final Symbol symbol;
@@ -63,7 +64,7 @@ public class OrderBook implements Serializable {
 
 
     public long generateTradeId() {
-        return  (MEDateUtils.getCurrentNanos() + currentTradeId.getAndIncrement()) % Long.MIN_VALUE;
+        return  (DateUtils.getCurrentNanos() + currentTradeId.getAndIncrement()) % Long.MIN_VALUE;
     }
 
 
@@ -90,24 +91,29 @@ public class OrderBook implements Serializable {
 
     public double getBestOppositePrice(GenOrder genOrder, Side ordSide) {
         double bestOppositePrice;
-        if( ordSide == BUY) {
-            bestOppositePrice = this.getBestAskPrice();
-            if( genOrder.getOrdPx() < bestOppositePrice ) {
-                double finalBestOppositePrice = bestOppositePrice;
-                log.debug("Price can't Match as Bid/BUY price {} is lower than best opposite price {}",
-                        genOrder::getOrdPx, ()-> finalBestOppositePrice);
-                bestOppositePrice = Double.NaN;
+        try {
+            readLock.lock();
+            if (ordSide == BUY) {
+                bestOppositePrice = this.getBestAskPrice();
+                if (genOrder.getOrdPx() < bestOppositePrice) {
+                    double finalBestOppositePrice = bestOppositePrice;
+                    log.debug("Price can't Match as Bid/BUY price {} is lower than best opposite price {}",
+                            genOrder::getOrdPx, () -> finalBestOppositePrice);
+                    bestOppositePrice = Double.NaN;
+                }
+            } else {
+                bestOppositePrice = this.getBestBidPrice();
+                if (genOrder.getOrdPx() > bestOppositePrice) {
+                    double finalBestOppositePrice = bestOppositePrice;
+                    log.debug("Price can't Match as Ask/SELL price {} is higher than best opposite price {}",
+                            genOrder::getOrdPx, () -> finalBestOppositePrice);
+                    bestOppositePrice = Double.NaN;
+                }
             }
-        } else {
-            bestOppositePrice = this.getBestBidPrice();
-            if( genOrder.getOrdPx() > bestOppositePrice ) {
-                double finalBestOppositePrice = bestOppositePrice;
-                log.debug("Price can't Match as Ask/SELL price {} is higher than best opposite price {}",
-                        genOrder::getOrdPx, ()-> finalBestOppositePrice);
-                bestOppositePrice = Double.NaN;
-            }
+            return bestOppositePrice;
+        } finally {
+            readLock.unlock();
         }
-        return bestOppositePrice;
     }
 
 
@@ -117,8 +123,13 @@ public class OrderBook implements Serializable {
             log.error("Wrong side, only SELL can be set for ask eqOrder = {}" , ()-> genOrder);
             return false;
         }
-        List<GenOrder> genOrderList = askOrderSortedMap.computeIfAbsent(genOrder.getOrdPx(), k-> new ArrayList<>());
-        return setOrderToList(genOrderList, genOrder);
+        try {
+            writeLock.lock();
+            List<GenOrder> genOrderList = askOrderSortedMap.computeIfAbsent(genOrder.getOrdPx(), k -> new ArrayList<>());
+            return setOrderToList(genOrderList, genOrder);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     private boolean setOrderToList(List<GenOrder> genOrderList, GenOrder genOrder) {
@@ -127,37 +138,46 @@ public class OrderBook implements Serializable {
             log.error("Duplicate Ask order received {}" , ()-> genOrder);
             return false;
         }
-        genOrder.setReceivedTS(MEDateUtils.getCurrentNanos());
+        genOrder.setReceivedTS(DateUtils.getCurrentNanos());
         return genOrderList.add(genOrder);
     }
 
     private boolean setBid(GenOrder genOrder) {
-        if( genOrder.getSide() != BUY ) {
-            log.error("Wrong side, only BUY can be set for bid eqOrder = {}" , ()-> genOrder);
-            return false;
+        try{
+            writeLock.lock();
+            if( genOrder.getSide() != BUY ) {
+                log.error("Wrong side, only BUY can be set for bid eqOrder = {}" , ()-> genOrder);
+                return false;
+            }
+            List<GenOrder> genOrderList = bidOrderSortedMap.computeIfAbsent(genOrder.getOrdPx(), k-> new ArrayList<>());
+            return setOrderToList(genOrderList, genOrder);
+        }finally {
+            writeLock.unlock();
         }
-        List<GenOrder> genOrderList = bidOrderSortedMap.computeIfAbsent(genOrder.getOrdPx(), k-> new ArrayList<>());
-        return setOrderToList(genOrderList, genOrder);
     }
 
     public List<GenOrder> getBestBid() {
-        if( bidOrderSortedMap.isEmpty() ) return new ArrayList<>();
-        List<GenOrder> bestBid = bidOrderSortedMap.get(bidOrderSortedMap.lastKey());
-        if(bestBid != null && !bestBid.isEmpty())
-            return bestBid;
-
-        while( !bidOrderSortedMap.isEmpty() ) {
-            bidOrderSortedMap.remove(bidOrderSortedMap.lastKey());
-            bestBid = bidOrderSortedMap.get(bidOrderSortedMap.lastKey());
+        try {
+            readLock.lock();
+            if( bidOrderSortedMap.isEmpty() ) return new ArrayList<>();
+            List<GenOrder> bestBid = bidOrderSortedMap.get(bidOrderSortedMap.lastKey());
             if(bestBid != null && !bestBid.isEmpty())
                 return bestBid;
-        }
 
+            while( !bidOrderSortedMap.isEmpty() ) {
+                bidOrderSortedMap.remove(bidOrderSortedMap.lastKey());
+                bestBid = bidOrderSortedMap.get(bidOrderSortedMap.lastKey());
+                if(bestBid != null && !bestBid.isEmpty())
+                    return bestBid;
+            }
+        } finally {
+            readLock.unlock();
+        }
         return new ArrayList<>();
     }
 
     public double getBestBidPrice() {
-        if( bidOrderSortedMap.isEmpty() ) return Double.NaN;
+        if (bidOrderSortedMap.isEmpty()) return Double.NaN;
         return (bidOrderSortedMap.lastKey());
     }
 
@@ -167,32 +187,44 @@ public class OrderBook implements Serializable {
             log.error(" fxBidOrderSortedMap is empty, potential indication of race condition bug, can't removed order {}" , ()-> genOrder);
             return false;
         }
-        List<GenOrder> fxoList = bidOrderSortedMap.computeIfPresent(genOrder.getOrdPx(), (px, fxol)-> {
-            fxol.removeIf(fxo -> fxo.equals(genOrder));
-            return fxol;
-        });
-        Double ordPxKey = genOrder.getOrdPx();
-        List<GenOrder> genOrderList = bidOrderSortedMap.get(ordPxKey);
-        if(genOrderList.isEmpty())
-            bidOrderSortedMap.remove(ordPxKey);
-        log.debug("After Removal, List of Bids on price {}, {} " , ordPxKey, genOrderList);
-        return null!=fxoList && !fxoList.contains(genOrder);
+        try {
+            writeLock.lock();
+            List<GenOrder> fxoList = bidOrderSortedMap.computeIfPresent(genOrder.getOrdPx(), (px, fxol)-> {
+                fxol.removeIf(fxo -> fxo.equals(genOrder));
+                return fxol;
+            });
+            Double ordPxKey = genOrder.getOrdPx();
+            List<GenOrder> genOrderList = bidOrderSortedMap.get(ordPxKey);
+            if(genOrderList.isEmpty())
+                bidOrderSortedMap.remove(ordPxKey);
+            log.debug("After Removal, List of Bids on price {}, {} " , ordPxKey, genOrderList);
+            return null!=fxoList && !fxoList.contains(genOrder);
+        } finally {
+            writeLock.unlock();
+        }
+
     }
 
     public List<GenOrder> getBestAsk() {
-        if( askOrderSortedMap.isEmpty() ) return new ArrayList<>();
-        List<GenOrder> bestAsk = askOrderSortedMap.get(askOrderSortedMap.firstKey());
-        if(bestAsk != null && !bestAsk.isEmpty())
-            return bestAsk;
-
-        while( !askOrderSortedMap.isEmpty() ) {
-            askOrderSortedMap.remove(askOrderSortedMap.firstKey());
-            bestAsk = askOrderSortedMap.get(askOrderSortedMap.firstKey());
+        try {
+            readLock.lock();
+            if( askOrderSortedMap.isEmpty() ) return new ArrayList<>();
+            List<GenOrder> bestAsk = askOrderSortedMap.get(askOrderSortedMap.firstKey());
             if(bestAsk != null && !bestAsk.isEmpty())
                 return bestAsk;
+
+            while( !askOrderSortedMap.isEmpty() ) {
+                askOrderSortedMap.remove(askOrderSortedMap.firstKey());
+                bestAsk = askOrderSortedMap.get(askOrderSortedMap.firstKey());
+                if(bestAsk != null && !bestAsk.isEmpty())
+                    return bestAsk;
+            }
+
+            return new ArrayList<>();
+        } finally {
+            readLock.unlock();
         }
 
-        return new ArrayList<>();
     }
 
     public double getBestAskPrice() {
@@ -224,13 +256,13 @@ public class OrderBook implements Serializable {
     }
 
     public boolean removeOrder(GenOrder genOrder) {
-        if( genOrder.getSide() == BUY ) {
-            return removeBid(genOrder);
-        } else if (genOrder.getSide() == SELL ) {
-            return removeAsk(genOrder);
-        }
-        log.error("Un-identified side to find order to be removed order {}" , ()-> genOrder);
-        return false;
+        if (genOrder.getSide() == BUY) {
+                return removeBid(genOrder);
+            } else if (genOrder.getSide() == SELL) {
+                return removeAsk(genOrder);
+            }
+            log.error("Un-identified side to find order to be removed order {}", () -> genOrder);
+            return false;
     }
 
     public Collection<GenOrder> getOrderHistory() {
@@ -258,7 +290,12 @@ public class OrderBook implements Serializable {
 
     @Override
     public String toString() {
-        return orderBookDisplay.printFormat(this);
+        try {
+            readLock.lock();
+            return orderBookDisplay.printFormat(this);
+        }finally {
+            readLock.unlock();
+        }
     }
 
 

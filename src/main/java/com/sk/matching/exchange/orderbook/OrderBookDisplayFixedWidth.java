@@ -63,7 +63,7 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
         for ( PxVol pxVol : displayList ) {
             sb.append("\t\t\t\t\t\t\t")
               .append(DECIMAL_FORMAT.format(pxVol.getPx())).append("\t\t\t")
-              .append((pxVol.getVol())).append("\t")
+              .append(DECIMAL_TO_INT_FORMAT.format(pxVol.getVol())).append("\t")
               .append("\n");
         }
         return sb.toString();
@@ -81,7 +81,7 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
         }
 
         for ( PxVol pxVol : displayList ) {
-            sb.append(pxVol.getVol()).append("\t\t")
+            sb.append(DECIMAL_TO_INT_FORMAT.format(pxVol.getVol())).append("\t\t")
             .append(DECIMAL_FORMAT.format(pxVol.getPx())).append("\t")
             .append("\n");
         }

@@ -9,9 +9,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Log4j2
-public class MEDateUtils {
+public class DateUtils {
 
-    private MEDateUtils(){
+    private DateUtils(){
         throw new UnsupportedOperationException("Instantiation Restricted");
     }
 

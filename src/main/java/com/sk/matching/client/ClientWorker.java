@@ -7,7 +7,7 @@ import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.order.Order;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
-import com.sk.matching.util.MEDateUtils;
+import com.sk.matching.util.DateUtils;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class ClientWorker implements Client {
     }
     public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot) {
             String clOrdId = String.format("%s%sC%s",
-                    side, MEDateUtils.getCurrentNanos(), incrementallyUnique.getAndIncrement());
+                    side, DateUtils.getCurrentNanos(), incrementallyUnique.getAndIncrement());
         this.createAndSubmitOrder( symbol,  side,  px,  qty, ot, clOrdId );
     }
 
