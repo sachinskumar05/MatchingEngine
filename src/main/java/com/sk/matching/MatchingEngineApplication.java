@@ -13,6 +13,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,44 +32,53 @@ public class MatchingEngineApplication {
 		log.info("Application starting");
 		SpringApplication.run(MatchingEngineApplication.class, args);
 
+		String testInputFile = "./input-test-data/test2.txt";
+		List<String[]> lineListArr  = new ArrayList<>();
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(testInputFile));
+			log.info("Reading Trade Input file {}", testInputFile);
+			for(String line: lines) {
+				log.info("Loaded Trade Line {} " , line);
+				lineListArr.add(line.split(","));
+			}
+		} catch (IOException e) {
+			log.error("Failed Test Case " , e);
+			return;
+		}
+
 		BasicMatchingEngine basicMatchingEngine = BasicMatchingEngine.getInstance();
-
 		ClientWorker clientA = new ClientWorker();
-		ClientWorker clientB = new ClientWorker();
-
 
 		final String BAC = "BAC";
-		log.info("Trading simulation will start on {}", BAC);
-		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.30, 100, OrderType.LIMIT));
-		ThreadUtils.pause(1000);
-		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.25, 100, OrderType.LIMIT));
-		ThreadUtils.pause(1000);
-		executorService.submit(()-> clientA.createAndSubmitOrder(BAC, Side.SELL, 20.30, 200, OrderType.LIMIT));
+		log.info("Trading simulation will start on {} using input file {}", BAC, testInputFile);
+		for (String[] attributes : lineListArr ) {
+			log.info("Creating order using file input {}", Arrays.toString(attributes));
+			String clOrdId = attributes[0];
+			Side side = Side.valueOf(attributes[1].charAt(0));
+			Double px = Double.valueOf(attributes[2]);
+			Double qty = Double.valueOf(attributes[3]);
+			Double visibleQty = Double.NaN;
+			if( attributes.length > 4 ) {
+				visibleQty = Double.valueOf(attributes[3]);
+			}
+			executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
+					side,
+					px,
+					qty,
+					OrderType.LIMIT,
+					clOrdId));
+		}
 
-		ThreadUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.15, 100, OrderType.LIMIT));
-		ThreadUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.20, 200, OrderType.LIMIT));
-		ThreadUtils.pause(1000);
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.15, 200, OrderType.LIMIT));
-
-		Symbol symbolBAC = null;
+		Symbol symbol = null;
 
 		try {
-			symbolBAC = SymbolCache.get(BAC);
+			symbol = SymbolCache.get(BAC);
 		} catch (SymbolNotSupportedException e) {
 			log.error("Failed to create order for {}", BAC, e );
 		}
 
-		ThreadUtils.pause(1000);
-		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
-
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.25, 100, OrderType.LIMIT));
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 100, OrderType.LIMIT));
-		executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 50, OrderType.LIMIT));
-
-		ThreadUtils.pause(1000);
-		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
+//		ThreadUtils.pause(500);
+		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
 
 		Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 

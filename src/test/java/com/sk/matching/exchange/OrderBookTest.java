@@ -71,12 +71,11 @@ class OrderBookTest {
         }
     }
 
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    static void tearDown() {
         try {
-            orderBook = OrderBook.getBook(SymbolCache.get(symbolStr));
-            orderBook.removeOrder(buyOrder);
-            orderBook.removeOrder(sellOrder);
+            OrderBook orderBook = OrderBook.getBook(SymbolCache.get(symbolStr));
+            orderBook.reset();
         } catch (SymbolNotSupportedException e) {
             log.error("Failed test case as symbol not found {}", symbolStr, e);
         }
@@ -84,16 +83,17 @@ class OrderBookTest {
 
     @Test
     void testGetBook() {
-        OrderBook result = null;
+        OrderBook orderBook = null;
         try {
-            result = OrderBook.getBook(SymbolCache.get(symbolStr));
+            orderBook = OrderBook.getBook(SymbolCache.get(symbolStr));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to execute test case ", e);
         }
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(symbolStr, result.getSymbol().getName());
-        Assertions.assertTrue(result.getAskOrderSortedMap().isEmpty());
-        Assertions.assertTrue(result.getBidOrderSortedMap().isEmpty());
+        orderBook.reset();
+        Assertions.assertNotNull(orderBook);
+        Assertions.assertEquals(symbolStr, orderBook.getSymbol().getName());
+        Assertions.assertTrue(orderBook.getAskOrderSortedMap().isEmpty());
+        Assertions.assertTrue(orderBook.getBidOrderSortedMap().isEmpty());
     }
 
     @Test
@@ -104,6 +104,7 @@ class OrderBookTest {
 
     @Test
     void testSetOrder() {
+        orderBook.reset();
         Assertions.assertThrows(NullPointerException.class, ()->orderBook.setOrder(null));
         Assertions.assertTrue(orderBook.setOrder(buyOrder));
     }
@@ -155,6 +156,7 @@ class OrderBookTest {
 
     @Test
     void testGetBestAskPrice() {
+        orderBook.reset();
         double result = orderBook.getBestAskPrice();
         Assertions.assertEquals(Double.NaN, result);
         orderBook.setOrder(sellOrder);
@@ -185,14 +187,16 @@ class OrderBookTest {
 
     @Test
     void testGetOrderHistory() {
+        orderBook.reset();
         Collection<GenOrder> result = orderBook.getOrderHistory();
-        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
     void testGetOrder() {
+        orderBook.reset();
         GenOrder result = orderBook.getOrder(Long.valueOf(1));
-        Assertions.assertNotNull(result);
+        Assertions.assertNull(result);
 
         result = orderBook.getOrder(Long.valueOf(100));
         Assertions.assertNull(result);

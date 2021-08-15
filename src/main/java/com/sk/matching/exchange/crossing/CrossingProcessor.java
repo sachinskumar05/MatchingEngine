@@ -47,7 +47,7 @@ public class CrossingProcessor {
             }
 
         }catch (Exception e) {
-            log.error("Exception while order matching ", ()-> e );//Exception is set param required to log stacktrace
+            log.error("Exception while order matching ", e );//Exception is set param required to log stacktrace
         }
 
     }

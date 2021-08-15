@@ -31,7 +31,7 @@ public class ClientWorker implements Client {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final Lock writeLock = readWriteLock.writeLock();
 
-    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, String clOrdId) {
+    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, String clOrdId, Double visibleQty) {
         GenOrder.Builder ordBuilder = null;
         try {
             ordBuilder = new GenOrder.Builder(clOrdId, symbol, side, ot);
@@ -39,14 +39,19 @@ public class ClientWorker implements Client {
                 builder.price = px ;
                 builder.qty = qty;
                 builder.currency = USD;
+                builder.visibleQty = visibleQty;
             }) .build();
             genOrderList.add(genOrder);
             submitOrder(genOrder);
         } catch (OrderCreationException | SymbolNotSupportedException e) {
             log.error("Failed to build EQOrder using its builder {} ", ordBuilder, e);
         }
-
     }
+
+    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, String clOrdId) {
+        this.createAndSubmitOrder(symbol, side, px, qty, ot, clOrdId, Double.NaN);
+    }
+
     public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot) {
             String clOrdId = String.format("%s%sC%s",
                     side, DateUtils.getCurrentNanos(), incrementallyUnique.getAndIncrement());

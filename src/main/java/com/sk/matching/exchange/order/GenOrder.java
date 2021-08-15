@@ -35,6 +35,7 @@ public class GenOrder implements Order {
     private double lastPrice = 0.0d;    //Last Executed Price
 
     private double ordQty = Double.NaN;   //Order Qty
+    private double visibleQty = Double.NaN;   //Order Qty
     private double cumQty = 0.0d;       // Cumulative executed Qty
     private double leavesQty = 0.0d;     //Remaining Qty
     private double lastQty = 0.0d;      //Last Executed Qty
@@ -189,6 +190,14 @@ public class GenOrder implements Order {
         return ordQty;
     }
 
+    public double getVisibleQty() {
+        if( Double.NaN == visibleQty )
+            return ordQty;
+        else {
+            return visibleQty;
+        }
+
+    }
     public double getCumQty() {
         return cumQty;
     }
@@ -237,6 +246,7 @@ public class GenOrder implements Order {
         public String currency;
         public double price = Double.NaN;
         public double qty;
+        public double visibleQty;
         public double cumQty;
         public double leavesQty;
 
@@ -290,6 +300,7 @@ public class GenOrder implements Order {
         genOrder.avgPx = this.avgPx;                 //Average Execution Price
         genOrder.lastPrice = this.lastPrice;         //Last Executed Price
         genOrder.ordQty = this.ordQty;               //Order Qty
+        genOrder.visibleQty = this.visibleQty;       //Visible Order Qty used in ICE Berg orders
         genOrder.cumQty = this.cumQty;               // Cumulative executed Qty
         genOrder.leavesQty = this.leavesQty;         //Remaining Qty
         genOrder.lastQty = this.lastQty;             //Last Executed Qty

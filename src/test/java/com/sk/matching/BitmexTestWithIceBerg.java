@@ -4,12 +4,15 @@ import com.sk.matching.client.ClientWorker;
 import com.sk.matching.config.AppCfg;
 import com.sk.matching.engine.BasicMatchingEngine;
 import com.sk.matching.exception.SymbolNotSupportedException;
+import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.symbols.SymbolCache;
 import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,7 +32,7 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 @SpringBootTest
-class BitMexTest {
+class BitmexTestWithIceBerg {
 
     @Mock
     AppCfg appCfg;
@@ -53,9 +56,22 @@ class BitMexTest {
         symbolCache.init();
     }
 
+    @AfterAll
+    static void tearDown() {
+        Symbol symbol = null;
+        OrderBook orderBook = null;
+        try {
+            symbol = SymbolCache.get(symbolStr);
+            orderBook = OrderBook.getBook(symbol);
+            orderBook.reset();
+        } catch (SymbolNotSupportedException e) {
+            log.error("Failed to create order for {}", symbolStr, e );
+        }
+    }
+
     @Test
     void testMain() {
-        String testInputFile = "./input-test-data/BAC.txt";
+        String testInputFile = "./input-test-data/test_ice2.txt";
         List<String[]> lineListArr  = new ArrayList<>();
         try {
             List<String> lines = Files.readAllLines(Paths.get(testInputFile));

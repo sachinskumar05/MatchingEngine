@@ -238,17 +238,22 @@ public class OrderBook implements Serializable {
             log.error(" fxAskOrderSortedMap is empty, potential indication of race condition bug, can't removed order {}" , ()-> genOrder);
             return false;
         }
-        List<GenOrder> fxoList = askOrderSortedMap.computeIfPresent(genOrder.getOrdPx(), (px, fxol)-> {
-            fxol.removeIf(fxo -> fxo.equals(genOrder));
+        try {
+            writeLock.lock();
+            List<GenOrder> fxoList = askOrderSortedMap.computeIfPresent(genOrder.getOrdPx(), (px, fxol) -> {
+                fxol.removeIf(fxo -> fxo.equals(genOrder));
                 return fxol;
             });
-        Double ordPxKey = genOrder.getOrdPx();
-        List<GenOrder> genOrderList = askOrderSortedMap.get(ordPxKey);
-        if(genOrderList.isEmpty()) {
-            askOrderSortedMap.remove(ordPxKey);
+            Double ordPxKey = genOrder.getOrdPx();
+            List<GenOrder> genOrderList = askOrderSortedMap.get(ordPxKey);
+            if (genOrderList.isEmpty()) {
+                askOrderSortedMap.remove(ordPxKey);
+            }
+            log.debug("After Removal, List of Asks on price {}, {} ", ordPxKey, genOrderList);
+            return null != fxoList && !fxoList.contains(genOrder);
+        } finally {
+            writeLock.unlock();
         }
-        log.debug("After Removal, List of Asks on price {}, {} " , ordPxKey, genOrderList);
-        return null!=fxoList && !fxoList.contains(genOrder);
     }
 
     public void processOrder(GenOrder genOrder) {
@@ -298,6 +303,15 @@ public class OrderBook implements Serializable {
         }
     }
 
-
+    public void reset() {
+        try {
+            writeLock.lock();
+            orderHistory.clear();
+            askOrderSortedMap.clear();
+            bidOrderSortedMap.clear();
+        } finally {
+            writeLock.unlock();
+        }
+    }
 
 }
