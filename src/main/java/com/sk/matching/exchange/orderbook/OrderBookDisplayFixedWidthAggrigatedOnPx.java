@@ -1,11 +1,12 @@
 package com.sk.matching.exchange.orderbook;
 
 import com.sk.matching.exchange.order.GenOrder;
-import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 
@@ -16,12 +17,12 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * Please note
  */
 @Log4j2
-public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
+public class OrderBookDisplayFixedWidthAggrigatedOnPx implements OrderBookDisplay {
 
     private final int displayDepth = 10;
 
-    private static final OrderBookDisplayFixedWidth DISPLAY_MATCH_ORDER = new OrderBookDisplayFixedWidth();
-    public static OrderBookDisplayFixedWidth getInstance() {
+    private static final OrderBookDisplayFixedWidthAggrigatedOnPx DISPLAY_MATCH_ORDER = new OrderBookDisplayFixedWidthAggrigatedOnPx();
+    public static OrderBookDisplayFixedWidthAggrigatedOnPx getInstance() {
         return DISPLAY_MATCH_ORDER;
     }
     @Override
@@ -51,19 +52,18 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
     private String formatAsk(OrderBook orderBook) {
         StringBuilder sb = new StringBuilder("\n");
 
-        List<PxVol> displayList = new ArrayList<>();
+        final SortedMap<Double,Integer> askOrderSortedMap = new ConcurrentSkipListMap<>((o1, o2) -> Double.compare(o2,o1));
         int count = 0 ;
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getAskOrderSortedMap().entrySet() ) {
 //            if( count++ > displayDepth ) break;
-            for(GenOrder order : entry.getValue()) {
-                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));;
-            }
+            Integer volume = entry.getValue().stream().map(value -> (int)value.getLeavesQty()).reduce(0, Integer::sum);
+            askOrderSortedMap.put(entry.getKey(), volume);
         }
-        Collections.sort(displayList, (o1, o2) -> Double.compare(o2.getPx() , o1.getPx()));
-        for ( PxVol pxVol : displayList ) {
+
+        for ( Map.Entry<Double, Integer> entry : askOrderSortedMap.entrySet() ) {
             sb.append("\t\t\t\t\t\t\t")
-              .append(DECIMAL_FORMAT.format(pxVol.getPx())).append("\t\t\t")
-              .append((pxVol.getVol())).append("\t")
+              .append(DECIMAL_FORMAT.format(entry.getKey())).append("\t\t\t")
+              .append((entry.getValue())).append("\t")
               .append("\n");
         }
         return sb.toString();
@@ -71,32 +71,21 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
 
     private String formatBid(OrderBook orderBook) {
         StringBuilder sb = new StringBuilder();
-        List<PxVol> displayList = new ArrayList<>();
+        final SortedMap<Double,Integer> bidOrderSortedMap = new ConcurrentSkipListMap<>((o1, o2) -> Double.compare(o2,o1));
         int count = 0 ;
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getBidOrderSortedMap().entrySet() ) {
 //            if( count++ > displayDepth ) break;
-            for(GenOrder order : entry.getValue()) {
-                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));;
-            }
+            Integer volume = entry.getValue().stream().map(value -> (int)value.getLeavesQty()).reduce(0, Integer::sum);
+            bidOrderSortedMap.put(entry.getKey(), volume);
         }
 
-        for ( PxVol pxVol : displayList ) {
-            sb.append(pxVol.getVol()).append("\t\t")
-            .append(DECIMAL_FORMAT.format(pxVol.getPx())).append("\t")
+        for ( Map.Entry<Double, Integer> entry : bidOrderSortedMap.entrySet() ) {
+            sb.append(entry.getValue()).append("\t\t")
+            .append(DECIMAL_FORMAT.format(entry.getKey())).append("\t")
             .append("\n");
         }
         return sb.toString();
 
-    }
-
-    @Data
-    private class PxVol {
-        final Double px;
-        final Double vol;
-        public PxVol(Double px, Double vol){
-            this.vol = vol;
-            this. px = px;
-        }
     }
 
 }

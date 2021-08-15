@@ -31,29 +31,26 @@ public class ClientWorker implements Client {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public  final Lock writeLock = readWriteLock.writeLock();
 
-    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot) {
-        this.createAndSubmitOrder(symbol,side,px, qty, ot, 1);
-    }
-    private void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, int orderSliceCount) {
-        for (int i = 0; i < orderSliceCount; i++) {
+    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot, String clOrdId) {
+        GenOrder.Builder ordBuilder = null;
+        try {
+            ordBuilder = new GenOrder.Builder(clOrdId, symbol, side, ot);
+            GenOrder genOrder = ordBuilder.with(builder -> {
+                builder.price = px ;
+                builder.qty = qty;
+                builder.currency = USD;
+            }) .build();
+            genOrderList.add(genOrder);
+            submitOrder(genOrder);
+        } catch (OrderCreationException | SymbolNotSupportedException e) {
+            log.error("Failed to build EQOrder using its builder {} ", ordBuilder, e);
+        }
 
+    }
+    public void createAndSubmitOrder(String symbol, Side side, double px, double qty, OrderType ot) {
             String clOrdId = String.format("%s%sC%s",
                     side, MEDateUtils.getCurrentNanos(), incrementallyUnique.getAndIncrement());
-
-            GenOrder.Builder ordBuilder = null;
-            try {
-                ordBuilder = new GenOrder.Builder(clOrdId, symbol, side, ot);
-                GenOrder genOrder = ordBuilder.with(builder -> {
-                    builder.price = px ;
-                    builder.qty = qty;
-                    builder.currency = USD;
-                }) .build();
-                genOrderList.add(genOrder);
-                submitOrder(genOrder);
-            } catch (OrderCreationException | SymbolNotSupportedException e) {
-                log.error("Failed to build EQOrder using its builder {} ", ordBuilder, e);
-            }
-        }
+        this.createAndSubmitOrder( symbol,  side,  px,  qty, ot, clOrdId );
     }
 
     /**
