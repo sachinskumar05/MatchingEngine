@@ -7,19 +7,85 @@
    <h3 align="center">Prohibited to Share</h3>
 <p>
 
-A Stock Exchange's Matching Engine is fundamental to all trading activities. Not only does it maintain and manages all the investor’s orders, it also generates trades from them. The Matching Engine has to process a large amount of data at any given interval. On top of this, it has to accomplish multiple functions on the back of each order processed (e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
+A Stock Exchange's Matching Engine is fundamental to all trading activities. 
+Not only does it maintain and manages all the investor’s orders, it also generates trades from them. 
+The Matching Engine has to process a large amount of data at any given interval. 
+On top of this, it has to accomplish multiple functions on the back of each order processed 
+(e.g. sending Market Data Update, Storing the Order, Generating any resulting Trade).
 
-Design a Stock Exchange's Matching Engine’s crossing functionality, storing orders and generate any resulting trades from new orders. Below are some requirements:
-1.	Implement in Java
-2.	Be able to handle multiple client connections into the Engine
-3.	Solution needs to be thread safe
+A Basic Stock Exchange's Matching Engine’s crossing functionality, stores orders and generate any resulting trades from new orders. 
+Below are some pointers :
+1.	Implemented in Java
+2.	Multi Threaded, Able to handle multiple client connections into the Engine
+3.	Thread safe
 
-You are free to list any assumptions made during this exercise. For example, you may assume that the orders received by the Exchange is of a certain fixed format which you have defined. Bear in mind that the goal of this exercise is to demonstrate your ability to design and implement a workable solution. Avoid 3rd party libraries where possible.
+List of assumptions made during this exercise:
+1. The orders received by the Exchange is of a certain fixed format which is pre-defined
+2. Overall goal of this exercise is to demonstrate ability to design and implement a workable solution. 
+3. Avoided any 3rd party libraries except JUnit / Maven and Lombok.
+4. Given Four different view of order book to display
 
 Example:
 Say the order book, sorted by price and time looks like this:
 
 ```
+There are few custom Order book display formats as below, 
+
+Run JUNIT class ./test/java/com.sk.matching.BitMexTestNoMatch
+Input file is  ./input-test-data/test1.txt
+Formatter com.sk.matching.BitMexTestNoMatch - Order 
+=================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
+	Bids (buying)				Asks (selling)	
+Volume		Price			Price		Volume
+							105.00			20000	
+							103.00			100	
+							100.00			500	
+							100.00			10000	
+25500		98.00	
+50000		99.00	
+
+
+Run JUNIT class ./test/java/com.sk.matching.BitMexTestWithMatch
+Input file is  ./input-test-data/test2.txt
+Formatter com.sk.matching.BitMexTestNoMatch - Order 
+=================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
+	Bids (buying)				Asks (selling)	
+Volume		Price			Price		Volume
+							105.00			20000	
+							103.00			100	
+							100.00			500	
+							100.00			10000	
+25500		98.00	
+50000		99.00	
+
+
+Run JUNIT class ./test/java/com.sk.matching.BitmexTestWithIceBerg
+Input file is kept at input-test-data/test_ice2.txt
+=================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
+	Bids (buying)				Asks (selling)	
+Volume		Price			Price		Volume
+							101.00			20000	
+25500		98.00	
+50000		99.00	
+10000		100.00	
+
+
+```
+NB: The order for sorting by time is ascending for buy-side orders and descending for sell-side orders, 
+so that the order with the highest priority is always in the center and priorities decrease outwards (up or down, depending on the side).
+
+
+
+
+Example Using Second Formatter: 
+Now imagine a new limit order to "buy 250 shares at 20.35" comes in, then it will be filled, in this order:
+  100 shares at 20.25 (order #2)
+  100 shares at 20.30 (order #1)
+  50 shares at 20.30 (order #3)
+This leaves the order book in the following state:
+```
+Using Formatter OrderBookDisplayMatchOrder
+OrderBook
 ID	Side	Time			Qty		Price	Qty		Time				Side
 3	    	    	   				20.30	200	162720422493167700		SELL
 1	    	    	   				20.30	100	162720422288333000		SELL
@@ -27,19 +93,8 @@ ID	Side	Time			Qty		Price	Qty		Time				Side
 5	BUY	162720422708261600	200		20.20	  	    	    	   	
 4	BUY	162720422603839300	100		20.15	  	    	    	   	
 6	BUY	162720422819156200	200		20.15	  	    	    	   	
-```
 
-NB: The order for sorting by time is ascending for buy-side orders and descending for sell-side orders, so that the order with the highest priority is always in the center and priorities decrease outwards (up or down, depending on the side).
-
-Now imagine a new limit order to "buy 250 shares at 20.35" comes in, then it will be filled, in this order:
-
-100 shares at 20.25 (order #2)
-100 shares at 20.30 (order #1)
-50 shares at 20.30 (order #3)
-
-This leaves the order book in the following state:
-
-```
+Formatter OrderBookDisplayMatchOrder
 ID	Side	Time (nanos)            Qty      Price	  Qty	Time(nanos)		Side
 3	    	    	   			 20.30	  150	162720422493167700	SELL
 5	BUY	162720422708261600	200	 20.20	  	    	    	   	
