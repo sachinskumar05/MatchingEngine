@@ -18,15 +18,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
 @Log4j2
 public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
 
-    private final int displayDepth = 10;
-
     private static final OrderBookDisplayFixedWidth DISPLAY_MATCH_ORDER = new OrderBookDisplayFixedWidth();
     public static OrderBookDisplayFixedWidth getInstance() {
         return DISPLAY_MATCH_ORDER;
-    }
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException("Prohibited to be cloned");
     }
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###########.00##########");
@@ -35,7 +29,7 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
     @Override
     public String printFormat(OrderBook orderBook) {
         final StringBuilder sb = new StringBuilder(
-                String.format("\n=================== ORDER BOOK of %s ===================\n", orderBook.getSymbol())
+                "\n=================== ORDER BOOK of " + orderBook.getSymbol() + " ===================\n"
         );
         sb.append("\n")
         .append("\tBids (buying)\t\t\t\tAsks (selling)\t\n")
@@ -52,11 +46,11 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
         StringBuilder sb = new StringBuilder("\n");
 
         List<PxVol> displayList = new ArrayList<>();
-        int count = 0 ;
+
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getAskOrderSortedMap().entrySet() ) {
-//            if( count++ > displayDepth ) break;
+
             for(GenOrder order : entry.getValue()) {
-                displayList.add( new PxVol(order.getOrdPx(), displayVol(order) ));;
+                displayList.add( new PxVol(order.getOrdPx(), displayVol(order) ));
             }
         }
         Collections.sort(displayList, (o1, o2) -> Double.compare(o2.getPx() , o1.getPx()));
@@ -72,11 +66,9 @@ public class OrderBookDisplayFixedWidth implements OrderBookDisplay {
     private String formatBid(OrderBook orderBook) {
         StringBuilder sb = new StringBuilder();
         List<PxVol> displayList = new ArrayList<>();
-        int count = 0 ;
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getBidOrderSortedMap().entrySet() ) {
-//            if( count++ > displayDepth ) break;
             for(GenOrder order : entry.getValue()) {
-                displayList.add( new PxVol(order.getOrdPx(), displayVol(order) ));;
+                displayList.add( new PxVol(order.getOrdPx(), displayVol(order) ));
             }
         }
 

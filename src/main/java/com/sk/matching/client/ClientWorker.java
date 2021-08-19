@@ -36,10 +36,10 @@ public class ClientWorker implements Client {
         try {
             ordBuilder = new GenOrder.Builder(clOrdId, symbol, side, ot);
             GenOrder genOrder = ordBuilder.with(builder -> {
-                builder.price = px ;
-                builder.qty = qty;
-                builder.currency = USD;
-                builder.visibleQty = visibleQty;
+                builder.setPrice(px);
+                builder.setQty(qty);
+                builder.setCurrency(USD);
+                builder.setVisibleQty(visibleQty);
             }) .build();
             genOrderList.add(genOrder);
             submitOrder(genOrder);

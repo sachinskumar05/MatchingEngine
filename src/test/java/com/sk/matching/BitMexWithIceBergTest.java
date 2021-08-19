@@ -11,10 +11,7 @@ import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -94,11 +91,11 @@ class BitMexWithIceBergTest {
             log.info("Creating order using file input {}", Arrays.toString(attributes));
             String clOrdId = attributes[0];
             Side side = Side.valueOf(attributes[1].charAt(0));
-            Double px = Double.valueOf(attributes[2]);
-            Double qty = Double.valueOf(attributes[3]);
-            Double visibleQty = Double.NaN;
+            double px = Double.parseDouble(attributes[2]);
+            double qty = Double.parseDouble(attributes[3]);
+            double visibleQty = Double.NaN;
             if ( attributes.length > 4) {
-                visibleQty = Double.valueOf(attributes[4]);
+                visibleQty = Double.parseDouble(attributes[4]);
             }
             Double finalVisibleQty = visibleQty;
             executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
@@ -113,6 +110,8 @@ class BitMexWithIceBergTest {
 
         try {
             symbol = SymbolCache.get(BAC);
+            Assertions.assertNotNull(symbol);
+            Assertions.assertEquals(BAC, symbol.getName());
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to create order for {}", BAC, e );
         }

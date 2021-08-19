@@ -39,11 +39,6 @@ public class BasicMatchingEngine implements MatchingEngine {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException("EquityMatchingEngine prohibited to be cloned");
-    }
-
-    @Override
     public OrderBook getOrderBook(Symbol symbol) {
         return OrderBook.getBook(symbol);
     }

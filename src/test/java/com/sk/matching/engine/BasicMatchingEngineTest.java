@@ -3,6 +3,7 @@ package com.sk.matching.engine;
 import com.sk.matching.config.AppCfg;
 import com.sk.matching.exception.OrderCreationException;
 import com.sk.matching.exception.SymbolNotSupportedException;
+import com.sk.matching.exchange.order.Order;
 import com.sk.matching.exchange.orderbook.OrderBook;
 import com.sk.matching.exchange.order.GenOrder;
 import com.sk.matching.exchange.order.Trade;
@@ -51,11 +52,6 @@ class BasicMatchingEngineTest {
     }
 
     @Test
-    void testClone() {
-        Assertions.assertThrows(CloneNotSupportedException.class, ()-> basicMatchingEngine.clone()) ;
-    }
-
-    @Test
     void testGetOrderBook() {
         Symbol symbol = new Symbol("name", Double.valueOf(0));
         OrderBook result = basicMatchingEngine.getOrderBook(symbol);
@@ -75,12 +71,12 @@ class BasicMatchingEngineTest {
         try {
 
             GenOrder.Builder eqOrderBuy = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
-            eqOrderBuy.price=30.00;
-            eqOrderBuy.qty=100;
+            eqOrderBuy.setPrice(30.00);
+            eqOrderBuy.setQty(100);
             basicMatchingEngine.addOrder(eqOrderBuy.build());
             GenOrder.Builder eqOrderSell = new GenOrder.Builder("CLOrdId2", BAC, Side.SELL, OrderType.LIMIT);
-            eqOrderSell.price=30.00;
-            eqOrderSell.qty=100;
+            eqOrderSell.setPrice(30.00);
+            eqOrderSell.setQty(100);
             basicMatchingEngine.addOrder(eqOrderSell.build());
             List<Trade> result = basicMatchingEngine.getTrades(new Symbol("name", Double.valueOf(0)));
             Assertions.assertTrue(result.isEmpty());
@@ -96,8 +92,8 @@ class BasicMatchingEngineTest {
                 ()-> new GenOrder.Builder("CLOrdId1",  "FAKE", Side.BUY, OrderType.LIMIT));
         try {
             GenOrder.Builder eqOrder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
-            eqOrder.price = 30.00;
-            eqOrder.qty=100;
+            eqOrder.setPrice(30.00);
+            eqOrder.setQty(100);
             basicMatchingEngine.addOrder(eqOrder.build());
         } catch (SymbolNotSupportedException | OrderCreationException e) {
             e.printStackTrace();
@@ -108,8 +104,10 @@ class BasicMatchingEngineTest {
     void testAddLimitOrderWithoutPrice() {
         try {
             GenOrder.Builder eqOrder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
-            Assertions.assertThrows(OrderCreationException.class, ()-> basicMatchingEngine.addOrder(eqOrder.build()));
-        } catch (SymbolNotSupportedException e) {
+            Assertions.assertThrows(OrderCreationException.class, eqOrder::build);
+            Order order = eqOrder.build();
+            Assertions.assertThrows(OrderCreationException.class, ()-> basicMatchingEngine.addOrder(order));
+        } catch (SymbolNotSupportedException | OrderCreationException e) {
             log.error("Failed Test case ", e);
         }
     }
@@ -118,9 +116,9 @@ class BasicMatchingEngineTest {
     void testAddLimitOrderWithoutQty() {
         try {
             GenOrder.Builder ordBuilder = new GenOrder.Builder("CLOrdId1", BAC, Side.BUY, OrderType.LIMIT);
-            ordBuilder.price= 30.00;
+            ordBuilder.setPrice(30.00);
 //            Assertions.assertThrows(OrderCreationException.class, ()-> basicMatchingEngine.addOrder(ordBuilder.build()));
-            ordBuilder.qty = 100;
+            ordBuilder.setQty(100);
             Assertions.assertDoesNotThrow(()-> basicMatchingEngine.addOrder(ordBuilder.build()));
         } catch (SymbolNotSupportedException e) {
             log.error("Failed Test case ", e);

@@ -20,14 +20,17 @@ public enum Side {
             case 's':
             case 'S':
                 return SELL;
+            default: {
+                throw new UnsupportedOperationException("Unsupported SIDE " + side);
+            }
         }
-        throw new UnsupportedOperationException("Unsupported SIDE " + side);
     }
 
     public static Side valueOf(int side) {
-        switch (side) {
-            case 1:return BUY;
-            case 2:return SELL;
+        if (side == 1) {
+            return BUY;
+        } else if (side == 2) {
+            return SELL;
         }
         throw new UnsupportedOperationException("Unsupported SIDE " + side);
     }

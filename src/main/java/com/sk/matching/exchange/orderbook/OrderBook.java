@@ -30,7 +30,7 @@ public class OrderBook implements Serializable {
     private static final Map<Symbol, OrderBook> orderBookCache = new ConcurrentHashMap<>();
 
     public static OrderBook getBook(Symbol symbol) {//Flyweight and thread safe
-        return orderBookCache.computeIfAbsent(symbol, eqs -> new OrderBook(eqs) );
+        return orderBookCache.computeIfAbsent(symbol, OrderBook::new);
     }
 
     private OrderBook(Symbol symbol) {

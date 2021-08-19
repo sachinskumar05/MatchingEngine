@@ -34,8 +34,8 @@ class OrderBookTest {
         GenOrder.Builder buyOrdBuilder = null;
         try {
             buyOrdBuilder = new GenOrder.Builder("CLOrdId1", symbolStr, Side.BUY, OrderType.LIMIT);
-            buyOrdBuilder.price=30.00;
-            buyOrdBuilder.qty=100;
+            buyOrdBuilder.setPrice(30.00);
+            buyOrdBuilder.setQty(100);
             buyOrder = buyOrdBuilder.build();
         } catch (SymbolNotSupportedException | OrderCreationException e) {
             log.error("Failed test case ", e);
@@ -44,8 +44,8 @@ class OrderBookTest {
         GenOrder.Builder sellOrdBuilder = null;
         try {
             sellOrdBuilder = new GenOrder.Builder("CLOrdId1", symbolStr, Side.SELL, OrderType.LIMIT);
-            sellOrdBuilder.price=30.00;
-            sellOrdBuilder.qty=100;
+            sellOrdBuilder.setPrice(30.00);
+            sellOrdBuilder.setQty(100);
             sellOrder = sellOrdBuilder.build();
         } catch (SymbolNotSupportedException | OrderCreationException e) {
             log.error("Failed test case ", e);
@@ -173,16 +173,11 @@ class OrderBookTest {
     }
 
     @Test
-    void testProcessOrder() {
-        orderBook.processOrder(null);
-    }
-
-    @Test
     void testRemoveOrder() {
         Assertions.assertThrows(NullPointerException.class, ()-> orderBook.removeOrder(null));
         orderBook.setOrder(buyOrder);
         boolean result = orderBook.removeOrder(buyOrder);
-        Assertions.assertEquals(true, result);
+        Assertions.assertTrue(result);
     }
 
     @Test
@@ -195,10 +190,10 @@ class OrderBookTest {
     @Test
     void testGetOrder() {
         orderBook.reset();
-        GenOrder result = orderBook.getOrder(Long.valueOf(1));
+        GenOrder result = orderBook.getOrder(1L);
         Assertions.assertNull(result);
 
-        result = orderBook.getOrder(Long.valueOf(100));
+        result = orderBook.getOrder(100L);
         Assertions.assertNull(result);
     }
 

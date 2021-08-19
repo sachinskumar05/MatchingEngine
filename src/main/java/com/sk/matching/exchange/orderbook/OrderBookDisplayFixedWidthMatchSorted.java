@@ -25,10 +25,7 @@ public class OrderBookDisplayFixedWidthMatchSorted implements OrderBookDisplay {
     public static OrderBookDisplayFixedWidthMatchSorted getInstance() {
         return DISPLAY_MATCH_ORDER;
     }
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException("Prohibited to be cloned");
-    }
+
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###########.00##########");
     private static final DecimalFormat DECIMAL_TO_INT_FORMAT = new DecimalFormat("###########");
@@ -36,7 +33,7 @@ public class OrderBookDisplayFixedWidthMatchSorted implements OrderBookDisplay {
     @Override
     public String printFormat(OrderBook orderBook) {
         final StringBuilder sb = new StringBuilder(
-                String.format("\n=================== ORDER BOOK of %s ===================\n", orderBook.getSymbol())
+                "\n=================== ORDER BOOK of " + orderBook.getSymbol() + " ===================\n"
         );
         sb.append("\n")
         .append("\tBids (buying)\t\t\t\tAsks (selling)\t\n")
@@ -53,14 +50,13 @@ public class OrderBookDisplayFixedWidthMatchSorted implements OrderBookDisplay {
         StringBuilder sb = new StringBuilder("\n");
 
         List<PxVol> displayList = new ArrayList<>();
-        int count = 0 ;
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getAskOrderSortedMap().entrySet() ) {
-//            if( count++ > displayDepth ) break;
+
             for(GenOrder order : entry.getValue()) {
-                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));;
+                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));
             }
         }
-        Collections.sort(displayList, (o1, o2) -> Double.compare(o2.getPx() , o1.getPx()));
+        displayList.sort((o1, o2) -> Double.compare(o2.getPx(), o1.getPx()));
         for ( PxVol pxVol : displayList ) {
             sb.append("\t\t\t\t\t\t\t")
               .append(DECIMAL_FORMAT.format(pxVol.getPx())).append("\t\t\t")
@@ -73,11 +69,10 @@ public class OrderBookDisplayFixedWidthMatchSorted implements OrderBookDisplay {
     private String formatBid(OrderBook orderBook) {
         StringBuilder sb = new StringBuilder();
         List<PxVol> displayList = new ArrayList<>();
-        int count = 0 ;
         for ( Map.Entry<Double, List<GenOrder>> entry : orderBook.getBidOrderSortedMap().entrySet() ) {
-//            if( count++ > displayDepth ) break;
+
             for(GenOrder order : entry.getValue()) {
-                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));;
+                displayList.add(new PxVol(order.getOrdPx(), order.getLeavesQty()));
             }
         }
 

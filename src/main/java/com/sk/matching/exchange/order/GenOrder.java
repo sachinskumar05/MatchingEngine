@@ -26,7 +26,7 @@ public class GenOrder implements Order {
 
     private final String clOrdId;
     private long orderId = Long.MIN_VALUE;
-    private final Symbol symbol;
+    private final transient Symbol symbol;
     private final Side side;
     private final OrderType orderType;
 
@@ -55,9 +55,6 @@ public class GenOrder implements Order {
      * And whenever we need explicit locking, all I have to use below write lock in execute method within try finally block
      * e.g. acquire lock at START EXECUTING and release lock when END EXECUTING
      */
-    private transient ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    private transient Lock writeLock = rwLock.writeLock();
-
     private AtomicBoolean isOpen = new AtomicBoolean(true);
 
     private GenOrder(String clOrdId, Symbol symbol, Side side, OrderType orderType) {
@@ -238,12 +235,18 @@ public class GenOrder implements Order {
         private final Side side;
         private final OrderType ordTyp;
 
-        public String currency;
-        public double price = Double.NaN;
-        public double qty = Double.NaN;
-        public double visibleQty = Double.NaN;
-        public double cumQty;
-        public double leavesQty;
+        @Setter
+        private String currency;
+        @Setter
+        private double price = Double.NaN;
+        @Setter
+        private double qty = Double.NaN;
+        @Setter
+        private double visibleQty = Double.NaN;
+        @Setter
+        private double cumQty;
+        @Setter
+        private double leavesQty;
 
         public Builder(String clOrdId, String symbolStr, Side side, OrderType ordTyp) throws SymbolNotSupportedException {
             this.clOrdId  = clOrdId;

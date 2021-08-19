@@ -12,6 +12,7 @@ import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -93,8 +94,8 @@ class BitMexNoMatchTest {
             log.info("Creating order using file input {}", Arrays.toString(attributes));
             String clOrdId = attributes[0];
             Side side = Side.valueOf(attributes[1].charAt(0));
-            Double px = Double.valueOf(attributes[2]);
-            Double qty = Double.valueOf(attributes[3]);
+            double px = Double.parseDouble(attributes[2]);
+            double qty = Double.parseDouble(attributes[3]);
             executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
                     side,
                     px,
@@ -107,6 +108,8 @@ class BitMexNoMatchTest {
 
         try {
             symbol = SymbolCache.get(BAC);
+            Assertions.assertNotNull(symbol);
+            Assertions.assertEquals(BAC, symbol.getName());
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to create order for {}", BAC, e );
         }
