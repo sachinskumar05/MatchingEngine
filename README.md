@@ -31,9 +31,9 @@ Say the order book, sorted by price and time looks like this:
 ```
 There are few custom Order book display formats as below, 
 
-Run JUNIT class ./test/java/com.sk.matching.BitMexTestNoMatch
+Run JUNIT class ./test/java/com.sk.matching.BitMexNoMatchTest
 Input file is  ./input-test-data/test1.txt
-Formatter com.sk.matching.BitMexTestNoMatch - Order 
+Formatter com.sk.matching.BitMexNoMatchTest - Order 
 =================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
 	Bids (buying)				Asks (selling)	
 Volume		Price			Price		Volume
@@ -45,9 +45,9 @@ Volume		Price			Price		Volume
 50000		99.00	
 
 
-Run JUNIT class ./test/java/com.sk.matching.BitMexTestWithMatch
+Run JUNIT class ./test/java/com.sk.matching.BitMexWithMatchTest
 Input file is  ./input-test-data/test2.txt
-Formatter com.sk.matching.BitMexTestNoMatch - Order 
+Formatter com.sk.matching.BitMexNoMatchTest - Order 
 =================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
 	Bids (buying)				Asks (selling)	
 Volume		Price			Price		Volume
@@ -59,7 +59,7 @@ Volume		Price			Price		Volume
 50000		99.00	
 
 
-Run JUNIT class ./test/java/com.sk.matching.BitmexTestWithIceBerg
+Run JUNIT class ./test/java/com.sk.matching.BitMexWithIceBergTest
 Input file is kept at input-test-data/test_ice2.txt
 =================== ORDER BOOK of Symbol(name=BAC, openingPx=37.665001) ===================
 	Bids (buying)				Asks (selling)	

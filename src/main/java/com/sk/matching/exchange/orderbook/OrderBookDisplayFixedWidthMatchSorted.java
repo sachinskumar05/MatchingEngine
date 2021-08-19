@@ -20,7 +20,6 @@ import java.util.Map;
 @Log4j2
 public class OrderBookDisplayFixedWidthMatchSorted implements OrderBookDisplay {
 
-    private final int displayDepth = 10;
 
     private static final OrderBookDisplayFixedWidthMatchSorted DISPLAY_MATCH_ORDER = new OrderBookDisplayFixedWidthMatchSorted();
     public static OrderBookDisplayFixedWidthMatchSorted getInstance() {

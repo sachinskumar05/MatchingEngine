@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 @SpringBootTest
-class BitMexTestWithMatch {
+class BitMexWithMatchTest {
 
     @Mock
     AppCfg appCfg;
