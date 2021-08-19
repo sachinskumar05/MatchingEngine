@@ -51,9 +51,9 @@ public class GenOrder implements Order {
 
     /**
      * Locking is always an overhead on performance
-     * therefore, instead of using Locks here on transaction I preferred Queuing on Executors which make it way faster compared to lock
-     * And whenever we need explicit locking, all I have to use below write lock in execute method within try finally block
-     * e.g. acquire lock at START EXECUTING and release lock when END EXECUTING
+     * therefore, instead of using Locks here on transaction I preferred Queuing on Executors which make it way faster compared to lock.
+     *
+     * However, whenever we need explicit locking, all I have to use read-write lock seamlessly in read / update methods.
      */
     private AtomicBoolean isOpen = new AtomicBoolean(true);
 
