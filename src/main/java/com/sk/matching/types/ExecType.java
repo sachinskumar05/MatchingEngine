@@ -6,5 +6,7 @@ public enum ExecType {//FixTag#150
     ExecType(String et) {
         fixValue = et;
     }
-
+    public String getFixValue(){
+        return fixValue;
+    }
 }
