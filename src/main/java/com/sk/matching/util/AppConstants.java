@@ -1,10 +1,7 @@
 package com.sk.matching.util;
 
-public class AppConstants {
-    private AppConstants(){
-        throw new UnsupportedOperationException("Restricted Instantiation");
-    }
+public interface AppConstants {
 
-    public static final String USD = "USD";
+    String USD = "USD";
 
 }

@@ -9,15 +9,14 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 @Log4j2
-public class FileUtils {
+public interface FileUtils {
 
-    private FileUtils(){throw new UnsupportedOperationException("Instantiation Restricted");}
 
-    public static String getLastLineOf(Path filePath) {
+    static String getLastLineOf(Path filePath) {
         try (Stream<String> stream = Files.lines(filePath) ) {
             return stream.reduce( (f, s)-> s ).orElse(null);
         } catch (IOException e) {
-            log.error(" Failed while reading file ");
+            e.printStackTrace();
         }
         return null;
     }

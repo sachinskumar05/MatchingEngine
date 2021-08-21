@@ -9,15 +9,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Log4j2
-public class DateUtils {
+public interface DateUtils {
 
-    private DateUtils(){
-        throw new UnsupportedOperationException("Instantiation Restricted");
-    }
 
-    public static final DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    public static long getCurrentNanos(){
+    static long getCurrentNanos(){
         ZonedDateTime zdt = LocalDateTime.now().atZone(ZoneId.of("GMT"));
         Instant instant = zdt.toInstant();
         return instant.getEpochSecond() * 100000000L + instant.getNano();

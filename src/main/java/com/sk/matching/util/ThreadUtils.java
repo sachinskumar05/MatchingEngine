@@ -7,17 +7,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Log4j2
-public class ThreadUtils {
-
-    private ThreadUtils(){ throw new UnsupportedOperationException("Instantiation Restricted"); }
+public interface ThreadUtils {
 
 
     public static void pause(long millis) {
         try {
             TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {
-            log.error("Interrupted while sleep ", e);
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
     }
