@@ -9,4 +9,5 @@ public enum MsgType {//FixTag#35
     public String getFixValue() {
         return fixValue;
     }
+
 }

@@ -3,13 +3,15 @@ package com.sk.matching.symbols;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.Serializable;
+
 /**
  * Immutable static data reference loaded at start up marked as good for trade
  * This class will be also used for trade time locking (write lock) on its orderBook
  */
 @Data
 @Log4j2
-public class Symbol { /// when extended with more attributes, make it immutable
+public class Symbol implements Serializable { /// when extended with more attributes, make it immutable
 
     private static final long serialVersionUID = 2405172041950251807L;
 

@@ -10,6 +10,7 @@ import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -69,23 +70,25 @@ class MatchingEngineApplicationTest {
 //        ThreadUtils.pause(1000);
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.15, 200, OrderType.LIMIT));
 
-        Symbol symbolBAC = null;
+        Symbol symbol = null;
 
         try {
-            symbolBAC = SymbolCache.get(BAC);
+            symbol = SymbolCache.get(BAC);
+            Assertions.assertNotNull(symbol);
+            Assertions.assertEquals(BAC, symbol.getName());
         } catch (SymbolNotSupportedException e) {
             log.error("Failed to create order for {}", BAC, e );
         }
 
         ThreadUtils.pause(100);
-        log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
+        log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
 
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.25, 100, OrderType.LIMIT));
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 100, OrderType.LIMIT));
         executorService.submit(()-> clientB.createAndSubmitOrder(BAC, Side.BUY, 20.30, 50, OrderType.LIMIT));
 
         ThreadUtils.pause(200);
-        log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbolBAC));
+        log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
 
         Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 

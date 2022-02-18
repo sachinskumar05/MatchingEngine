@@ -18,13 +18,13 @@ import static com.sk.matching.types.Side.SELL;
 @Log4j2
 public class CrossingProcessor {
 
-    public void processOrder(GenOrder genOrder) {
+    public void processOrder(GenOrder aggressiveOrder) {
         try {
-            OrderBook orderBook = OrderBook.getBook(genOrder.getSymbol());
-            orderBook.setOrder(genOrder);
+            OrderBook orderBook = OrderBook.getBook(aggressiveOrder.getSymbol());
+            orderBook.setOrder(aggressiveOrder);
 
-            Side side = genOrder.getSide();
-            String clOrdId = genOrder.getClientOrderId();
+            Side side = aggressiveOrder.getSide();
+            String clOrdId = aggressiveOrder.getClientOrderId();
             log.debug(()-> clOrdId +", side "+ side + " order received... will try to match with opposite side for best price.");
 
             List<GenOrder> bestOppositeOrderList = orderBook.getBestOppositeOrderList(side);
@@ -34,15 +34,15 @@ public class CrossingProcessor {
                 return ;
             }
 
-            while (genOrder.getLeavesQty() > 0 && (!bestOppositeOrderList.isEmpty()) ) {
+            while (aggressiveOrder.getLeavesQty() > 0 && (!bestOppositeOrderList.isEmpty()) ) {
 
-                log.debug("Started Processing --- {}, {}" , genOrder::getClientOrderId, genOrder::getLeavesQty);
-                if (checkIfBestOppositeExists(genOrder, orderBook, side, bestOppositeOrderList)) break;
+                log.debug("Started Processing --- {}, {}" , aggressiveOrder::getClientOrderId, aggressiveOrder::getLeavesQty);
+                if (checkIfBestOppositeExists(aggressiveOrder, orderBook, side, bestOppositeOrderList)) break;
 
                 List<GenOrder> finalList = bestOppositeOrderList;
-                log.debug( "--- clOrdId {}, Opposite Orders {}" , genOrder::getClientOrderId, ()-> finalList);
+                log.debug( "--- clOrdId {}, Opposite Orders {}" , aggressiveOrder::getClientOrderId, ()-> finalList);
 
-                bestOppositeOrderList = executeOrders(genOrder, orderBook, side, clOrdId, bestOppositeOrderList);
+                bestOppositeOrderList = executeOrders(aggressiveOrder, orderBook, side, clOrdId, bestOppositeOrderList);
 
             }
 

@@ -55,18 +55,20 @@ public class MatchingEngineApplication {
 			log.info("Creating order using file input {}", Arrays.toString(attributes));
 			String clOrdId = attributes[0];
 			Side side = Side.valueOf(attributes[1].charAt(0));
-			Double px = Double.valueOf(attributes[2]);
-			Double qty = Double.valueOf(attributes[3]);
-			Double visibleQty = Double.NaN;
+			double px = Double.parseDouble(attributes[2]);
+			double qty = Double.parseDouble(attributes[3]);
+			double visibleQty = Double.NaN;
 			if( attributes.length > 4 ) {
-				visibleQty = Double.valueOf(attributes[3]);
+				visibleQty = Double.parseDouble(attributes[3]);
 			}
+			double finalVisibleQty = visibleQty;
 			executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
 					side,
 					px,
 					qty,
 					OrderType.LIMIT,
-					clOrdId));
+					clOrdId,
+					finalVisibleQty));
 		}
 
 		Symbol symbol = null;
@@ -77,7 +79,7 @@ public class MatchingEngineApplication {
 			log.error("Failed to create order for {}", BAC, e );
 		}
 
-//		ThreadUtils.pause(500);
+
 		log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
 
 		Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));

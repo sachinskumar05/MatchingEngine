@@ -2,6 +2,8 @@ package com.sk.matching.exchange.orderbook;
 
 import com.sk.matching.exchange.crossing.CrossingProcessor;
 import com.sk.matching.exchange.order.GenOrder;
+import com.sk.matching.exchange.orderbook.display.OrderBookDisplay;
+import com.sk.matching.exchange.orderbook.display.OrderBookDisplayFixedWidth;
 import com.sk.matching.symbols.Symbol;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.DateUtils;
@@ -30,7 +32,7 @@ public class OrderBook implements Serializable {
     private static final Map<Symbol, OrderBook> orderBookCache = new ConcurrentHashMap<>();
 
     public static OrderBook getBook(Symbol symbol) {//Flyweight and thread safe
-        return orderBookCache.computeIfAbsent(symbol, eqs -> new OrderBook(eqs) );
+        return orderBookCache.computeIfAbsent(symbol, OrderBook::new);
     }
 
     private OrderBook(Symbol symbol) {
