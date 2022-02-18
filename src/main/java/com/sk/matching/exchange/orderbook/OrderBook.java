@@ -287,7 +287,7 @@ public class OrderBook implements Serializable {
 
         OrderBook that = (OrderBook) o;
 
-        return symbol != null ? symbol.equals(that.symbol) : that.symbol == null;
+        return Objects.equals(symbol, that.symbol);
     }
 
     @Override
