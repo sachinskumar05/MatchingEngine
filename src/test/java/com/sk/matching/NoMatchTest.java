@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 @SpringBootTest
-class BitMexNoMatchTest {
+class NoMatchTest {
 
     @Mock
     AppCfg appCfg;

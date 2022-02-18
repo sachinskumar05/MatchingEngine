@@ -11,7 +11,10 @@ import com.sk.matching.types.OrderType;
 import com.sk.matching.types.Side;
 import com.sk.matching.util.ThreadUtils;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -29,7 +32,7 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 @SpringBootTest
-class BitMexWithIceBergTest {
+class WithMatchTest {
 
     @Mock
     AppCfg appCfg;
@@ -68,7 +71,7 @@ class BitMexWithIceBergTest {
 
     @Test
     void testMain() {
-        String testInputFile = "./input-test-data/test_ice2.txt";
+        String testInputFile = "./input-test-data/test2.txt";
         List<String[]> lineListArr  = new ArrayList<>();
         try {
             List<String> lines = Files.readAllLines(Paths.get(testInputFile));
@@ -94,16 +97,15 @@ class BitMexWithIceBergTest {
             double px = Double.parseDouble(attributes[2]);
             double qty = Double.parseDouble(attributes[3]);
             double visibleQty = Double.NaN;
-            if ( attributes.length > 4) {
-                visibleQty = Double.parseDouble(attributes[4]);
+            if( attributes.length > 4 ) {
+                visibleQty = Double.parseDouble(attributes[3]);
             }
-            Double finalVisibleQty = visibleQty;
             executorService.submit(()-> clientA.createAndSubmitOrder(BAC,
                     side,
                     px,
                     qty,
                     OrderType.LIMIT,
-                    clOrdId, finalVisibleQty));
+                    clOrdId));
         }
 
         Symbol symbol = null;
@@ -116,9 +118,8 @@ class BitMexWithIceBergTest {
             log.error("Failed to create order for {}", BAC, e );
         }
 
-        ThreadUtils.pause(500);
+		ThreadUtils.pause(500);
         log.info( "Order {}" ,  basicMatchingEngine.getOrderBook(symbol));
-
         Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
 
     }
