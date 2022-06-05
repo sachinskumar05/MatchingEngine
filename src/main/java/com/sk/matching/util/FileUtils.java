@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 import java.util.stream.Stream;
 
-@Log4j2
 public interface FileUtils {
 
 
