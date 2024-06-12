@@ -51,6 +51,7 @@ public class OrderBook implements Serializable {
 
     private final Symbol symbol;
     //Using Red-Black Tree Implementation for auto sorting on insertion O(log N)
+    //https://www.geeksforgeeks.org/introduction-to-red-black-tree/
     //Comparatively faster than having two phase operation i.e. Keep price in Priority Queue and orders in Price Map of Order List.
     //Moreover, ConcurrentSkipListMap is thread safe
     @Getter
